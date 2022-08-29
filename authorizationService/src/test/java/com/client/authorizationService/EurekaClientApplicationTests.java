@@ -1,4 +1,4 @@
-package com.client.eurekaclient;
+package com.client.authorizationService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

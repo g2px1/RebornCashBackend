@@ -1,4 +1,4 @@
-package com.client.eurekaclient.testControllers;
+package com.client.userService.testControllers;
 
 import org.springframework.web.bind.annotation.*;
 

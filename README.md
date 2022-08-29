@@ -13,6 +13,11 @@
 9) [Feign](https://medium.com/@kirill.sereda/spring-cloud-netflix-feign-по-русски-7b8272e8e110)
 10) [Feign + Hystrix](https://medium.com/@kirill.sereda/spring-cloud-netflix-hystrix-по-русски-e60e91a6770f)
 11) https://github.com/senoritadeveloper01/nils-spring-microservices
+12) https://medium.com/@kirill.sereda/reactive-programming-reactor-и-spring-webflux-3f779953ed45
+13) https://www.baeldung.com/java-dto-pattern
+14) https://spring.io/guides/topicals/spring-security-architecture
+15) https://docs.spring.io/spring-security/reference/
+16) https://ard333.medium.com/authentication-and-authorization-using-jwt-on-spring-webflux-29b81f813e78
 
 ------
 

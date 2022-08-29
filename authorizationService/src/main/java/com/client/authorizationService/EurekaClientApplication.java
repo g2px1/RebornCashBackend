@@ -1,4 +1,4 @@
-package com.client.eurekaclient;
+package com.client.authorizationService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
