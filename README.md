@@ -12,4 +12,5 @@
 8) https://github.com/in28minutes/spring-boot-examples/tree/master/spring-boot-basic-microservice
 9) [Feign](https://medium.com/@kirill.sereda/spring-cloud-netflix-feign-по-русски-7b8272e8e110)
 10) [Feign + Hystrix](https://medium.com/@kirill.sereda/spring-cloud-netflix-hystrix-по-русски-e60e91a6770f)
-11) 
+11) https://github.com/senoritadeveloper01/nils-spring-microservices
+
