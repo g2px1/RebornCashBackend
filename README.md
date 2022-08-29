@@ -14,3 +14,6 @@
 10) [Feign + Hystrix](https://medium.com/@kirill.sereda/spring-cloud-netflix-hystrix-по-русски-e60e91a6770f)
 11) https://github.com/senoritadeveloper01/nils-spring-microservices
 
+------
+
+![Microservice architecture](/Users/kirillzhukov/Documents/GitHub/RebornCashBackend/documents/images/Architecture_of_microservices.png)
