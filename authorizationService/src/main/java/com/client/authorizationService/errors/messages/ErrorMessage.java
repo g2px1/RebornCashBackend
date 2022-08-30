@@ -1,7 +1,14 @@
 package com.client.authorizationService.errors.messages;
 
-public abstract class ErrorMessage {
-    public static final String USER_EXISTS = "user already exist.";
-    public static final String USER_NOT_FOUND = "user not found.";
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
+public abstract class ErrorMessage {
+    @Value("${app.error.message.USER_EXISTS}")
+    public static String USER_EXISTS;
+    @Value("${app.error.message.USER_NOT_FOUND}")
+    public static String USER_NOT_FOUND;
+    @Value("${app.error.message.USER_BANNED}")
+    public static String USER_BANNED;
 }

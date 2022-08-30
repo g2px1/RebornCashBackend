@@ -9,8 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableFeignClients
 @EnableDiscoveryClient
-public class EurekaClientApplication {
+public class AuthorizationServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(EurekaClientApplication.class, args);
+        SpringApplication.run(AuthorizationServiceApplication.class, args);
     }
 }
