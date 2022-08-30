@@ -1,6 +1,6 @@
 package com.client.authorizationService.utilities.JWT.DTO;
 
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.User;
 import com.client.authorizationService.utilities.JWT.DTO.user.NonSecureUserDTO;
 import com.client.authorizationService.utilities.JWT.DTO.user.SecureUserDTO;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.client.authorizationService.users;
+package com.client.authorizationService.models.DTO.users;
 
 public class Role {
   private String id;

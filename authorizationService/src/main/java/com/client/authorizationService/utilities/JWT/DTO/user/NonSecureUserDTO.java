@@ -1,6 +1,6 @@
 package com.client.authorizationService.utilities.JWT.DTO.user;
 
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.User;
 
 import java.math.BigDecimal;
 

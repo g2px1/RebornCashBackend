@@ -1,10 +1,11 @@
 package com.client.authorizationService.services.authorization;
 
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.io.Serial;
 import java.util.Collection;

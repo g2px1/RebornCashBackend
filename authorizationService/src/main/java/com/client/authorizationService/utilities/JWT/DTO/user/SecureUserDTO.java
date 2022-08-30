@@ -1,7 +1,7 @@
 package com.client.authorizationService.utilities.JWT.DTO.user;
 
-import com.client.authorizationService.users.Role;
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.Role;
+import com.client.authorizationService.models.DTO.users.User;
 
 import java.util.List;
 

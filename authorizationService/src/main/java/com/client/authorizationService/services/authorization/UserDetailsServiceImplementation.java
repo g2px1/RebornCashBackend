@@ -2,7 +2,7 @@ package com.client.authorizationService.services.authorization;
 
 import com.client.authorizationService.errors.messages.ErrorMessage;
 import com.client.authorizationService.services.openfeign.users.UserInterface;
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

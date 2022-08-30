@@ -2,11 +2,13 @@ package com.client.authorizationService.services.authorization.filters;
 
 import com.client.authorizationService.errors.messages.ErrorMessage;
 import com.client.authorizationService.services.authorization.UserDetailsServiceImplementation;
-import com.client.authorizationService.users.User;
+import com.client.authorizationService.models.DTO.users.User;
 import com.client.authorizationService.utilities.JWT.JWTUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

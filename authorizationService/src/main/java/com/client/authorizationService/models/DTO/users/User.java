@@ -1,4 +1,4 @@
-package com.client.authorizationService.users;
+package com.client.authorizationService.models.DTO.users;
 
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import jakarta.validation.constraints.Email;
@@ -19,7 +19,6 @@ public class User implements Serializable {
   @Size(max = 50)
   @Email
   private String email;
-  private long userNumber;
   @NotBlank
   @Size(max = 120)
   private String password;
@@ -36,6 +35,14 @@ public class User implements Serializable {
     this.username = username;
     this.email = email;
     this.password = password;
+  }
+
+  public User(String username, String email, String password, List<Role> roles, String secretKey) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.roles = roles;
+    this.secretKey = secretKey;
   }
 
   public String getId() {
@@ -98,12 +105,6 @@ public class User implements Serializable {
   public void setStatus(String status) {
     this.status = status;
   }
-  public long getUserNumber() {
-    return userNumber;
-  }
-  public void setUserNumber(long userNumber) {
-    this.userNumber = userNumber;
-  }
   public int getNonce() {
     return nonce;
   }
@@ -112,6 +113,6 @@ public class User implements Serializable {
   }
   @Override
   public String toString() {
-    return String.format("{id=%s, username=%s, email=%s, userNumber=%s, password=%s, balance=%s, twoFA=%s, status=%s, secretKey=%s}", this.id, this.username, this.email, this.userNumber, this.password, this.balance, this.twoFA, this.status, this.secretKey);
+    return String.format("{id=%s, username=%s, email=%s, password=%s, balance=%s, twoFA=%s, status=%s, secretKey=%s}", this.id, this.username, this.email, this.password, this.balance, this.twoFA, this.status, this.secretKey);
   }
 }

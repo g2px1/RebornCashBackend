@@ -11,4 +11,8 @@ public abstract class ErrorMessage {
     public static String USER_NOT_FOUND;
     @Value("${app.error.message.USER_BANNED}")
     public static String USER_BANNED;
+    @Value("${app.error.message.DEFAULT}")
+    public static String DEFAULT_ERROR;
+    @Value("${app.error.message.BOT}")
+    public static String BOT;
 }
