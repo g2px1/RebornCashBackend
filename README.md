@@ -18,6 +18,9 @@
 14) https://spring.io/guides/topicals/spring-security-architecture
 15) https://docs.spring.io/spring-security/reference/
 16) https://ard333.medium.com/authentication-and-authorization-using-jwt-on-spring-webflux-29b81f813e78
+17) https://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/2.1.0.RELEASE/single/spring-cloud-netflix.html#_how_to_include_hystrix
+18) https://stackoverflow.com/questions/58929693/how-to-get-hystrix-dashboard-working-again-in-spring-boot-admin-2-x
+19) https://www.devglan.com/spring-boot/spring-boot-admin
 
 ------
 

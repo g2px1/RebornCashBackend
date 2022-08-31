@@ -16,9 +16,22 @@ public class AuthenticationController {
     private AuthorizationService authorizationService;
 
     @PostMapping("/user/authorizeUser")
-    public JWTResponseDTO authorizeUser(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) { return authorizationService.authorizeUser(authorizationDTO, httpServletRequest); }
+    public JWTResponseDTO authorizeUser(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
+        return authorizationService.authorizeUser(authorizationDTO, httpServletRequest);
+    }
+
     @PostMapping("/user/registerUser")
-    public JWTResponseDTO registerUser(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) { return authorizationService.registerUser(authorizationDTO, httpServletRequest); }
+    public JWTResponseDTO registerUser(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
+        return authorizationService.registerUser(authorizationDTO, httpServletRequest);
+    }
+
     @PostMapping("/user/resetPassword")
-    public Boolean resetPassword(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) { return authorizationService.resetPassword(authorizationDTO, httpServletRequest); }
+    public Boolean resetPassword(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
+        return authorizationService.resetPassword(authorizationDTO, httpServletRequest);
+    }
+
+    @PostMapping("/user/validateToken")
+    public Boolean validateToken(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
+        return authorizationService.validateJWT(authorizationDTO, httpServletRequest);
+    }
 }

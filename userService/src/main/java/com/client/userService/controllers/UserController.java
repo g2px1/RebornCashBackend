@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/userService/")
+@RequestMapping("/userService")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -30,4 +30,9 @@ public class UserController {
     public Boolean isExistsByEmail(@PathVariable String name, @PathVariable String email) { return userService.userExistsByAll(name, email); }
     @GetMapping("/changePasswordIfExists/{name}/{password}/{code}")
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
+    @GetMapping("/test")
+    public User test() {
+        System.out.println(1111);
+        return userService.getUser("g2px1").get();
+    }
 }
