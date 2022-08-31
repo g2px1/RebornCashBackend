@@ -52,33 +52,7 @@ public class AuthorizationService {
     @Value("${app.scoresLevel.recaptcha}")
     private BigDecimal scoresLevel;
 
-    protected boolean isCaptchaNotValid(String captchaToken, HttpServletRequest request) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = String.format("https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s", recaptchaSecretKey, captchaToken);
-        String strResponse = restTemplate.postForObject(url,
-                new HashMap<>(),
-                String.class,
-                new HashMap<>(Map.of("secret", recatpchaUrl,
-                        "response", captchaToken,
-                        "remoteip", request.getRemoteAddr())));
-        JSONObject json = new JSONObject(strResponse);
-        BigDecimal score;
-        try {
-            score = new BigDecimal(json.get("score").toString());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
-        }
-        if (json.getBoolean("success"))
-            return (score.compareTo(scoresLevel) < 0);
-        return !json.getBoolean("success");
-    }
-    protected boolean isAuthenticatorValid(User user, int code) throws GeneralSecurityException {
-        return TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), code, 0);
-    }
-
-    public JWTResponseDTO authorizeUser(AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
-//        if (isCaptchaNotValid(authorizationDTO.captchaToken, httpServletRequest))
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.BOT);
+    public JWTResponseDTO authorizeUser(AuthorizationDTO authorizationDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authorizationDTO.username, authorizationDTO.password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtility.generateJwtToken(authentication);
@@ -98,7 +72,7 @@ public class AuthorizationService {
         return new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), (user.isTwoFA()) ? user.getNonce() : -1);
     }
 
-    public JWTResponseDTO registerUser(AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
+    public JWTResponseDTO registerUser(AuthorizationDTO authorizationDTO) {
 //        if (isCaptchaNotValid(authorizationDTO.captchaToken, httpServletRequest))
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.BOT);
         if (userInterface.isExistsByAll(authorizationDTO.username, authorizationDTO.email))
@@ -109,12 +83,10 @@ public class AuthorizationService {
                 new UsernamePasswordAuthenticationToken(authorizationDTO.getUsername(), authorizationDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtility.generateJwtToken(authentication);
-        return new JWTResponseDTO(null, user.getUsername(), user.isTwoFA(), -1);
+        return new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), -1);
     }
 
-    public boolean resetPassword(AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
-//        if (isCaptchaNotValid(authorizationDTO.captchaToken, httpServletRequest))
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.BOT);
+    public boolean resetPassword(AuthorizationDTO authorizationDTO) {
         if (!userInterface.changePasswordIfExists(authorizationDTO.username, encoder.encode(authorizationDTO.password), authorizationDTO.code))
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
         return true;

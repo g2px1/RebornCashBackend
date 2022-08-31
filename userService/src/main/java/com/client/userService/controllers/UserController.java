@@ -32,7 +32,6 @@ public class UserController {
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
     @GetMapping("/test")
     public User test() {
-        System.out.println(1111);
         return userService.getUser("g2px1").get();
     }
 }
