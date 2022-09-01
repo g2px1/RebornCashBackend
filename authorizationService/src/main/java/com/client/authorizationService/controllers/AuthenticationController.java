@@ -30,7 +30,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/user/validateToken")
-    public Boolean validateToken(@RequestBody AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
-        return authorizationService.validateJWT(authorizationDTO, httpServletRequest);
+    public Boolean validateToken(@RequestBody String authorizationHeader) {
+        return authorizationService.validateJWT(authorizationHeader);
     }
 }

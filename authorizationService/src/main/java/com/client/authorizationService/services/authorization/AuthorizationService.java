@@ -12,7 +12,6 @@ import com.client.authorizationService.services.openfeign.verify.VerifyInterface
 import com.client.authorizationService.utilities.JWT.JWTUtility;
 import com.client.authorizationService.utilities.random.Rnd;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,17 +19,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.security.GeneralSecurityException;
 import java.util.*;
 
 @Service
@@ -73,8 +68,6 @@ public class AuthorizationService {
     }
 
     public JWTResponseDTO registerUser(AuthorizationDTO authorizationDTO) {
-//        if (isCaptchaNotValid(authorizationDTO.captchaToken, httpServletRequest))
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.BOT);
         if (userInterface.isExistsByAll(authorizationDTO.username, authorizationDTO.email))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_EXISTS);
         User user = new User(authorizationDTO.username.trim(), authorizationDTO.email.trim(), encoder.encode(authorizationDTO.password.trim()), new ArrayList<>(List.of(new Role(ERole.ROLE_USER))), TimeBasedOneTimePasswordUtil.generateBase32Secret());
@@ -92,16 +85,14 @@ public class AuthorizationService {
         return true;
     }
 
-    public boolean validateJWT(AuthorizationDTO authorizationDTO, HttpServletRequest httpServletRequest) {
-        String jwt = parseJwt(httpServletRequest);
+    public boolean validateJWT(String authorizationHeader) {
+        String jwt = parseJwt(authorizationHeader);
         return jwtUtility.validateJwtToken(jwt);
     }
 
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7, headerAuth.length());
-        }
+    private String parseJwt(String authorizationHeader) {
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer "))
+            return authorizationHeader.substring(7, authorizationHeader.length());
         return null;
     }
 }
