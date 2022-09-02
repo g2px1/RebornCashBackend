@@ -22,6 +22,8 @@
 18) https://stackoverflow.com/questions/58929693/how-to-get-hystrix-dashboard-working-again-in-spring-boot-admin-2-x
 19) https://www.devglan.com/spring-boot/spring-boot-admin
 20) https://www.tutorialspoint.com/spring_boot/spring_boot_oauth2_with_jwt.htm#
+21) https://medium.com/@mool.smreeti/microservices-with-spring-boot-authentication-with-jwt-and-spring-security-6e10155d9db0
+
 
 ------
 
