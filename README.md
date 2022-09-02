@@ -22,7 +22,13 @@
 18) https://stackoverflow.com/questions/58929693/how-to-get-hystrix-dashboard-working-again-in-spring-boot-admin-2-x
 19) https://www.devglan.com/spring-boot/spring-boot-admin
 20) https://www.tutorialspoint.com/spring_boot/spring_boot_oauth2_with_jwt.htm#
+21) https://medium.com/@mool.smreeti/microservices-with-spring-boot-authentication-with-jwt-and-spring-security-6e10155d9db0
+22) https://www.baeldung.com/spring-security-oauth-auth-server
 
+## Some ideas:
+`spring-boot-starter-oauth2-client` - should be added on microsevice which needs to have aouthorization
+1) Need to copy UserDetailsImplementation to `@Bean` which returns UserDetails cause UserDetails contains authorities(such as ADMIN, MODERATOR, USER)
+2) Need to authorities to `scope` function
 ------
 
 # Microservices architecture
