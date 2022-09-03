@@ -24,6 +24,7 @@
 20) https://www.tutorialspoint.com/spring_boot/spring_boot_oauth2_with_jwt.htm#
 21) https://medium.com/@mool.smreeti/microservices-with-spring-boot-authentication-with-jwt-and-spring-security-6e10155d9db0
 22) https://www.baeldung.com/spring-security-oauth-auth-server
+23) https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html
 
 ## Some ideas:
 `spring-boot-starter-oauth2-client` - should be added on microsevice which needs to have aouthorization
