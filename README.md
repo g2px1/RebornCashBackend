@@ -27,6 +27,7 @@
 23) https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html
 24) https://habr.com/ru/post/545610/
 25) https://dzone.com/articles/using-nimbus-jose-jwt-in-spring-applications-why-a
+26) https://habr.com/ru/company/ruvds/blog/686628/
 
 ## Some ideas:
 `spring-boot-starter-oauth2-client` - should be added on microsevice which needs to have aouthorization
