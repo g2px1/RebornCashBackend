@@ -37,10 +37,7 @@ public class JWEMicroserviceSecret {
     public JWEMicroserviceSecret() {
         try {
             this.ecKey = new ECKeyGenerator(this.currentCurve).generate();
-            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(secretFile));
-            writer.writeObject(Base64.getEncoder().encodeToString(ecKey.toECPrivateKey().getS().toByteArray()));
-            writer.close();
-        } catch (JOSEException | IOException e) {
+        } catch (JOSEException e) {
             logger.error(e.getMessage());
         }
         jweHeader = new JWEHeader(currentJWEAlgorithm, encryptionMethod);

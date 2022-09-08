@@ -26,6 +26,8 @@ public class JWTAccess {
     public JWTAccess() {
         try {
             this.ecKey = new ECKeyGenerator(this.currentCurve).keyID(this.keyId).generate();
+            System.out.printf("x: %s, y: %s, d: %s\n", ecKey.getX(), ecKey.getY(), ecKey.getD());
+            System.out.printf("json: %s \n", ecKey.toJSONObject());
         } catch (JOSEException e) {
             logger.error(e.getMessage());
         }
