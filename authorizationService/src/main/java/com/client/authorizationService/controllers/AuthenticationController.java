@@ -6,8 +6,6 @@ import com.client.authorizationService.services.authorization.AuthorizationServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/authorizationService")
 public class AuthenticationController {
@@ -31,6 +29,7 @@ public class AuthenticationController {
 
     @PostMapping("/user/validateToken")
     public Boolean validateToken(@RequestBody String authorizationHeader) {
+        System.out.println(authorizationService.getECKeyData());
         return authorizationService.validateJWT(authorizationHeader);
     }
 }

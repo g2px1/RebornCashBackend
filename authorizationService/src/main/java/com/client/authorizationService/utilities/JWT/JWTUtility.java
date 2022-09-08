@@ -1,18 +1,18 @@
 package com.client.authorizationService.utilities.JWT;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.client.authorizationService.services.authorization.UserDetailsImplementation;
+import com.client.authorizationService.models.JWT.JWS;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.ECDSAVerifier;
+import com.nimbusds.jwt.SignedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.text.ParseException;
 
 @Component
 public class JWTUtility {
@@ -21,38 +21,25 @@ public class JWTUtility {
     @Value("${app.JWTExpirationMs}")
     private int jwtExpirationMs;
     private static final Logger logger = LoggerFactory.getLogger(JWTUtility.class);
+    @Autowired
+    private JWS jws;
 
-    public String generateJwtToken(Authentication authentication) {
-        UserDetailsImplementation userPrincipal = (UserDetailsImplementation) authentication.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC512(jwtSecret);
-        return JWT.create()
-                .withSubject((userPrincipal.getUsername()))
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date((new Date()).getTime() + jwtExpirationMs))
-                .sign(algorithm);
-    }
     public String getUserNameFromJwtToken(String token) {
-        Algorithm algorithm = Algorithm.HMAC512(jwtSecret);
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
-        DecodedJWT decodedJWT = verifier.verify(token);
-        return decodedJWT.getSubject();
-    }
-    public Date getExpiresAtDate(String token) {
-        Algorithm algorithm = Algorithm.HMAC512(jwtSecret);
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
-        DecodedJWT decodedJWT = verifier.verify(token);
-        return decodedJWT.getExpiresAt();
-    }
-    public boolean validateJwtToken(String authToken) {
         try {
-            Algorithm algorithm = Algorithm.HMAC512(jwtSecret);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .build();
-            DecodedJWT decodedJWT = verifier.verify(authToken);
-            return true;
-        } catch (JWTVerificationException ex) {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return signedJWT.getJWTClaimsSet().getClaim("username").toString();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return "not found";
+        }
+    }
+
+    public boolean validateJwtToken(String authorizationToken) {
+        try {
+            JWSVerifier jwsVerifier = new ECDSAVerifier(jws.getEcKey());
+            JWSObject jwsObject = JWSObject.parse(authorizationToken);
+            return jwsObject.verify(jwsVerifier);
+        } catch (JOSEException | ParseException ex) {
             logger.error("Invalid JWT signature: {}", ex.getMessage());
         }
         return false;

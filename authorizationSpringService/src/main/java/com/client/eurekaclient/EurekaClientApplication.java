@@ -1,20 +1,13 @@
 package com.client.eurekaclient;
 
-import com.client.eurekaclient.models.JWT.JWEMicroserviceSecret;
-import com.client.eurekaclient.models.JWT.JWTAccess;
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.ECDHEncrypter;
 import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.jwk.ECKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.util.Date;
 
 @SpringBootApplication
 @EnableFeignClients
@@ -24,9 +17,9 @@ public class EurekaClientApplication {
 //        JWTAccess jwtAccess = new JWTAccess();
 //        System.out.println(jwtAccess.generateJWS("g2px1"));
         ECKey ecKey = ECKey.parse("""
-                {"kty":"EC", "d":"Affb-CiELZeoGhlMu4mYSNecchSU9_Rl7l_gs-EMbb-w8POR7Gd_AE-t0g-Xly2QiDYeOKHVoJbTaP-dbBkfaWdo", "crv":"P-521", "kid":"a878607b-e5e5-4ab7-9ba5-f372c4a5ae1e", "x":"AC5-z_jTrCzxoxfRYHnE1sqkPpOFik3X375rw7NjJlR_1UpU0-ds3VtE2bdy4VQxZyaTmeYsW6w5XHNDb0l2OU62", "y":"AJ1fRMK6iyjjP5MiT303HOJShgbX17P8XVeLCrzsEKsM5uRgZsrdYEXSLduKV5Fdnuaff8XkZkaxQKLOecDLvvE_"}
+        {kty=EC, d=ACC3M93DHIUXjF9xmpLZDS_GZorwfHeq8pyWWsMX4QLyO1dX-Z-8XdOe2itOceONwsOUmpvA_bwLCF3_oM0Og9ty, crv=P-521, kid=381afe98-4f77-49eb-b053-39481fbd0052, x=AZ3XwlsN0ZZnTv4Cqu9hgUmbfT1zmEmbASAAeVIzuI995SnLfv6shCU0pCSXWJVd_l7m-2bfUPtHB3hSkf330pRO, y=AUX14TQEq7g2WRqcUcdo1QgmDEpZXshhqueGezFkGJr2ugKClpcPS2CC1ibV8fAzLhhjgyO3If0DOnJ54jqqQSHc}
                 """);
-        JWSObject jwsObject = JWSObject.parse("eyJraWQiOiJhODc4NjA3Yi1lNWU1LTRhYjctOWJhNS1mMzcyYzRhNWFlMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJodHRwczovL3JlYm9ybi5jYXNoIiwiYXVkIjoiaHR0cHM6Ly9yZWJvcm4uY2FzaCIsImV4cCI6MTY2MjY1MzQ2MCwidXNlcm5hbWUiOiJnMnB4MSJ9.ANPxEQyInVSJHfagJzW95YVIiCv2lwwOW3Ipt7Fh_tdyFDzzu3d1pQhmieyjJE2ctCmnI38vSFeIvfixcIu9GTZkAE2WDjdmKseKNKvQmsP8P9APL_84ajPDb-o1GJZBrAZZSocQ-sFqIq_n-JIwwnZgvH_U1yrjXh2RwN2gXuWR0JV0");
+        JWSObject jwsObject = JWSObject.parse("eyJraWQiOiIzODFhZmU5OC00Zjc3LTQ5ZWItYjA1My0zOTQ4MWZiZDAwNTIiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJodHRwczovL3JlYm9ybi5jYXNoIiwiYXVkIjoiaHR0cHM6Ly9yZWJvcm4uY2FzaCIsImV4cCI6MTY2MjY1NDUzNSwidXNlcm5hbWUiOiJnMnB4MSJ9.AOJ0HbmWKQpR5XM6K5HXk7rhvqlm8Kb289XyGYc3RO96gTddcHLyNqnMopc4OHuJ5t32cuH49s98MWW_GHz2JnlKAZPFLpAUTlRS-tjhM72Bh3VyV0smVZEWuTz2-6qYkWbwk-pSKG85fQkc_KPM9DpYbv_NFstRx_TQC0PNFqU_rN9H");
         JWSVerifier jwsVerifier = new ECDSAVerifier(ecKey);
         System.out.println(jwsObject.verify(jwsVerifier));
 //        SpringApplication.run(EurekaClientApplication.class, args);

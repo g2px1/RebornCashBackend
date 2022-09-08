@@ -15,19 +15,17 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
-public class JWTAccess {
+public class JWS {
     private String keyId = UUID.randomUUID().toString();
-    private ECKey ecKey;
+    private volatile ECKey ecKey;
     private final Curve currentCurve = Curve.P_521;
     private final JWSAlgorithm currentJWSAlgorithm = JWSAlgorithm.ES512;
     private JWSHeader jwsHeader;
-    private static final Logger logger = LoggerFactory.getLogger(JWTAccess.class);
+    private static final Logger logger = LoggerFactory.getLogger(JWS.class);
 
-    public JWTAccess() {
+    public JWS() {
         try {
             this.ecKey = new ECKeyGenerator(this.currentCurve).keyID(this.keyId).generate();
-            System.out.printf("x: %s, y: %s, d: %s\n", ecKey.getX(), ecKey.getY(), ecKey.getD());
-            System.out.printf("json: %s \n", ecKey.toJSONObject());
         } catch (JOSEException e) {
             logger.error(e.getMessage());
         }
@@ -52,6 +50,10 @@ public class JWTAccess {
 
     public void setKeyId(String keyId) {
         this.keyId = keyId;
+    }
+
+    public ECKey getEcKey() {
+        return this.ecKey;
     }
 
     public JWSHeader getJwsHeader() {

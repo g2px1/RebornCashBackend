@@ -1,4 +1,4 @@
-package com.client.eurekaclient.models.JWT;
+package com.client.authorizationService.models.JWT;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.ECDHEncrypter;
@@ -8,7 +8,6 @@ import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,10 +17,6 @@ import java.util.Date;
 
 @Service
 public class JWEMicroserviceSecret {
-    @Value("${app.services.JWESecret}")
-    private String keyId;
-    @Value("${app.services.privateKey.file}")
-    private String secretFile;
     private ECKey ecKey;
     private final Curve currentCurve = Curve.P_521;
     private final JWEAlgorithm currentJWEAlgorithm = JWEAlgorithm.ECDH_ES_A256KW;

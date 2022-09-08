@@ -2,6 +2,7 @@ package com.client.authorizationService.services.authorization;
 
 import com.client.authorizationService.errors.messages.ErrorMessage;
 import com.client.authorizationService.models.DTO.authorization.AuthorizationDTO;
+import com.client.authorizationService.models.JWT.JWS;
 import com.client.authorizationService.models.DTO.authorization.JWTResponseDTO;
 import com.client.authorizationService.models.DTO.users.ERole;
 import com.client.authorizationService.models.DTO.users.Role;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -35,8 +35,6 @@ public class AuthorizationService {
     @Autowired
     private PasswordEncoder encoder;
     @Autowired
-    private JWTUtility jwtUtility;
-    @Autowired
     private UserInterface userInterface;
     @Autowired
     private VerifyInterface verifyInterface;
@@ -46,11 +44,15 @@ public class AuthorizationService {
     private String recaptchaSecretKey;
     @Value("${app.scoresLevel.recaptcha}")
     private BigDecimal scoresLevel;
+    @Autowired
+    private volatile JWS jws;
+    @Autowired
+    private JWTUtility jwtUtility;
 
     public JWTResponseDTO authorizeUser(AuthorizationDTO authorizationDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authorizationDTO.username, authorizationDTO.password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtility.generateJwtToken(authentication);
+        String jwt = jws.generateJWS(authentication.getName());
         UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
         Optional<User> optionalUser;
         try {
@@ -75,7 +77,7 @@ public class AuthorizationService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authorizationDTO.getUsername(), authorizationDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtility.generateJwtToken(authentication);
+        String jwt = jws.generateJWS(authentication.getName());
         return new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), -1);
     }
 
@@ -94,5 +96,9 @@ public class AuthorizationService {
         if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer "))
             return authorizationHeader.substring(7, authorizationHeader.length());
         return null;
+    }
+
+    public Map<String, Object> getECKeyData() {
+        return jws.getEcKey().toJSONObject();
     }
 }
