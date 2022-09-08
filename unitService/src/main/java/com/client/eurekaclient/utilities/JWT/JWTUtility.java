@@ -1,4 +1,4 @@
-package com.client.authorizationService.utilities.JWT;
+package com.client.eurekaclient.utilities.JWT;
 
 import com.client.authorizationService.models.JWT.JWS;
 import com.nimbusds.jose.JOSEException;

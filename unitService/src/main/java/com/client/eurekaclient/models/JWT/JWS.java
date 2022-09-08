@@ -10,11 +10,13 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
+@Component
 public class JWS {
     private String keyId = UUID.randomUUID().toString();
     private volatile ECKey ecKey;
@@ -43,8 +45,12 @@ public class JWS {
         return signedJWT.serialize();
     }
 
-    public boolean validateJWS(String jws) throws JOSEException {
-        JWSVerifier verifier = new ECDSAVerifier(this.ecKey.toECPublicKey());
+    public  boolean validateJWS(String jws) {
+        try {
+            JWSVerifier verifier = new ECDSAVerifier(this.ecKey.toECPublicKey());
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 
@@ -58,5 +64,9 @@ public class JWS {
 
     public JWSHeader getJwsHeader() {
         return jwsHeader;
+    }
+
+    public void setEcKey(ECKey ecKey) {
+        this.ecKey = ecKey;
     }
 }
