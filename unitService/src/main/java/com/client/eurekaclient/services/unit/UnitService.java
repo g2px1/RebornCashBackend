@@ -24,4 +24,58 @@ public class UnitService {
                     """);
         }
     }
+    public JSONObject sendUnits(TransferTokensRequests transferTokensRequests) {
+        try {
+            return PostRequest.sendUnitTransaction(transferTokensRequests.recipient, transferTokensRequests.sender, Double.parseDouble(transferTokensRequests.amount));
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
+    public JSONObject createToken(String bytecode) {
+        try {
+            return PostRequest.createTokenTransaction(bytecode);
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
+    public JSONObject findTx(String hash) {
+        try {
+            return PostRequest.findTransaction(hash);
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
+    public JSONObject getBalance(String address) {
+        try {
+            return PostRequest.getBalance(address);
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
+    public JSONObject getBlockHeight() {
+        try {
+            return PostRequest.blockHeight();
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
+    public JSONObject getTxPool() {
+        try {
+            return PostRequest.poolSize();
+        } catch (Exception e) {
+            return new JSONObject("""
+                        {"error": "error occurred"}
+                    """);
+        }
+    }
 }
