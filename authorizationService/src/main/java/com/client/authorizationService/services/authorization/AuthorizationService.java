@@ -2,6 +2,7 @@ package com.client.authorizationService.services.authorization;
 
 import com.client.authorizationService.errors.messages.ErrorMessage;
 import com.client.authorizationService.models.DTO.authorization.AuthorizationDTO;
+import com.client.authorizationService.models.DTO.response.ResponseHandler;
 import com.client.authorizationService.models.JWT.JWS;
 import com.client.authorizationService.models.DTO.authorization.JWTResponseDTO;
 import com.client.authorizationService.models.DTO.users.ERole;
@@ -16,6 +17,7 @@ import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,7 +51,7 @@ public class AuthorizationService {
     @Autowired
     private JWTUtility jwtUtility;
 
-    public JWTResponseDTO authorizeUser(AuthorizationDTO authorizationDTO) {
+    public ResponseEntity<Object> authorizeUser(AuthorizationDTO authorizationDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authorizationDTO.username, authorizationDTO.password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jws.generateJWS(authentication.getName());
@@ -58,38 +60,38 @@ public class AuthorizationService {
         try {
             optionalUser = userInterface.getUser(authorizationDTO.username);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_NOT_FOUND);
+            return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         User user = optionalUser.get();
         if (user.isTwoFA()) verifyInterface.setVerify(new VerifyDTO(user.getUsername(), false));
         else user.setNonce(Rnd.get(Integer.MAX_VALUE));
         userInterface.saveUser(user);
-        return new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), (user.isTwoFA()) ? user.getNonce() : -1);
+        return ResponseHandler.generateResponse(null, HttpStatus.BAD_REQUEST,  new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), (user.isTwoFA()) ? user.getNonce() : -1));
     }
 
-    public JWTResponseDTO registerUser(AuthorizationDTO authorizationDTO) {
+    public ResponseEntity<Object> registerUser(AuthorizationDTO authorizationDTO) {
         if (userInterface.isExistsByAll(authorizationDTO.username, authorizationDTO.email))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_EXISTS);
+            return ResponseHandler.generateResponse(ErrorMessage.USER_EXISTS, HttpStatus.BAD_REQUEST, null);
         User user = new User(authorizationDTO.username.trim(), authorizationDTO.email.trim(), encoder.encode(authorizationDTO.password.trim()), new ArrayList<>(List.of(new Role(ERole.ROLE_USER))), TimeBasedOneTimePasswordUtil.generateBase32Secret());
         userInterface.saveUser(user);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authorizationDTO.getUsername(), authorizationDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jws.generateJWS(authentication.getName());
-        return new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), -1);
+        return ResponseHandler.generateResponse(null, HttpStatus.BAD_REQUEST,  new JWTResponseDTO(jwt, user.getUsername(), user.isTwoFA(), (user.isTwoFA()) ? user.getNonce() : -1));
     }
 
-    public boolean resetPassword(AuthorizationDTO authorizationDTO) {
+    public ResponseEntity<Object> resetPassword(AuthorizationDTO authorizationDTO) {
         if (!userInterface.changePasswordIfExists(authorizationDTO.username, encoder.encode(authorizationDTO.password), authorizationDTO.code))
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
-        return true;
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+        return ResponseHandler.generateResponse(null, HttpStatus.BAD_REQUEST, true);
     }
 
-    public boolean validateJWT(String authorizationHeader) {
+    public ResponseEntity<Object> validateJWT(String authorizationHeader) {
         String jwt = parseJwt(authorizationHeader);
-        return jwtUtility.validateJwtToken(jwt);
+        return ResponseHandler.generateResponse(null, HttpStatus.BAD_REQUEST, jwtUtility.validateJwtToken(jwt));
     }
 
     private String parseJwt(String authorizationHeader) {
