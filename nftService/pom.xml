@@ -62,12 +62,6 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
             <version>2.7.3</version>
         </dependency>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb-reactive &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>-->
-<!--            <version>2.7.3</version>-->
-<!--        </dependency>-->
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -1,5 +1,6 @@
 package com.client.eurekaclient.controllers;
 
+import com.client.eurekaclient.models.nft.NFT;
 import com.client.eurekaclient.models.request.NFTPageRequest;
 import com.client.eurekaclient.models.request.NFTSeekingRequest;
 import com.client.eurekaclient.services.nft.NFTService;
@@ -33,5 +34,9 @@ public class NFTController {
     @PostMapping("/findByIndex")
     public ResponseEntity<Object> findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
         return nftService.findByIndex(nftSeekingRequest.index);
+    }
+    @PostMapping("/save")
+    public ResponseEntity<Object> findByIndex(@RequestBody NFT nft) {
+        return nftService.save(nft);
     }
 }
