@@ -1,4 +1,4 @@
-package com.client.eurekaclient.models;
+package com.client.eurekaclient.models.nft;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -6,10 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 import java.util.Map;
 
-@Document(collection = "nfts")
+@Document(collection = "nft")
 public class NFT implements Comparable<NFT> {
     @Id
     private String id;
@@ -33,6 +32,7 @@ public class NFT implements Comparable<NFT> {
     public String tribe = "null";
     public long activeTill;
     public String chain = "null";
+    public String uuid = "";
 
     public NFT(String name, String imageLink, String origin, String status, double age, double breed, long index, Map<String, String> skills, String tribe, long activeTill, String chain) {
         this.name = name;
