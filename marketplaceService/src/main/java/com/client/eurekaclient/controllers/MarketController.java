@@ -18,8 +18,6 @@ public class MarketController {
     public ResponseEntity<Object> getArticlePage(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findPage(productSeekingRequest);}
     @PostMapping("/findByUuid")
     public ResponseEntity<Object> findByUuid(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findByUUid(productSeekingRequest);}
-    @PostMapping("/test")
-    public ResponseEntity<Object> findByPrice(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findByPrice(10D);}
     @PostMapping("/save")
     public <T extends AbstractProduct> ResponseEntity<Object> save(@RequestBody T abstractProduct) {return marketService.save(abstractProduct);}
 }
