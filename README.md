@@ -38,3 +38,15 @@
 # Microservices architecture
 
 ![Microservice architecture](https://raw.githubusercontent.com/Abuzik/RebornCashBackend/main/documents/images/Architecture_of_microservices.png?token=GHSAT0AAAAAABM4Z4FGBLQCGCQY3WVE5GNUYYNFGFA)
+
+
+```bash
+sudo service mongod stop 
+sudo apt purge mongo*
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org=4.4.16 mongodb-org-server=4.4.16 mongodb-org-shell=4.4.16 mongodb-org-mongos=4.4.16 mongodb-org-tools=4.4.16
+sudo systemctl start mongod
+sudo systemctl status mongod
+```
