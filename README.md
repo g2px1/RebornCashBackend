@@ -52,3 +52,12 @@ sudo systemctl status mongod
 sudo chown -R mongodb:mongodb /var/lib/mongodb
 sudo chown mongodb:mongodb /tmp/mongodb-27017.sock
 ```
+```bash
+db.createUser(
+{
+user: "admin",
+pwd: "password",
+roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+}
+)
+```
