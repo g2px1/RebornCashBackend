@@ -26,7 +26,6 @@ public class UserService {
         return usersRepository.findFirstByUsername(name);
     }
     public Boolean saveUser(User requestUser) {
-        System.out.println(requestUser);
         requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
         if(usersRepository.existsByUsername(requestUser.getUsername()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_EXISTS);

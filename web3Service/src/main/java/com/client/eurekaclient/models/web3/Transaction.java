@@ -11,6 +11,12 @@ public class Transaction {
     public String chainName;
     public String username;
 
+    public Transaction(String hash, String chainName, String username) {
+        this.hash = hash;
+        this.chainName = chainName;
+        this.username = username;
+    }
+
     public String getHash() {
         return hash;
     }

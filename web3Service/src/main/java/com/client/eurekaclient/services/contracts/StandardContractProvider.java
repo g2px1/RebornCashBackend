@@ -4,12 +4,18 @@ import com.client.eurekaclient.services.gas.GasProvider;
 import org.web3j.contracts.eip20.generated.ERC20;
 import org.web3j.contracts.eip721.generated.ERC721;
 import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
+import org.web3j.tx.Contract;
 
 public class StandardContractProvider extends GasProvider implements ContractProvider {
     private Credentials credentials;
     public StandardContractProvider(String url, String privateKey) {
         super(url);
         this.credentials = Credentials.create(privateKey);
+    }
+
+    public Web3j getWeb3j() {
+        return super.web3j;
     }
 
     @Override

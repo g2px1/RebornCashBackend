@@ -8,7 +8,35 @@ public class BlockchainData {
     public String name;
     public String nftContractAddress;
     public String gameContractAddress;
+    public String stableCoinAddress;
+    public String privateKey;
     public String platform = "evm";
+
+    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String stableCoinAddress, String privateKey, String platform) {
+        this.url = url;
+        this.name = name;
+        this.nftContractAddress = nftContractAddress;
+        this.gameContractAddress = gameContractAddress;
+        this.stableCoinAddress = stableCoinAddress;
+        this.privateKey = privateKey;
+        this.platform = platform;
+    }
+
+    public String getStableCoinAddress() {
+        return stableCoinAddress;
+    }
+
+    public void setStableCoinAddress(String stableCoinAddress) {
+        this.stableCoinAddress = stableCoinAddress;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
 
     public String getUrl() {
         return url;
