@@ -1,4 +1,4 @@
-# Web3 service[^web3Service]
+# Web3 service
 
 ## URLs
 
@@ -20,14 +20,14 @@
 
 - Withdraw[^web3Withdraw]
 
-[^web3Deposit]: Deposit should check transaction by it's hash and chain name and increase balance through balanceService[^balanceService]
-[^web3Withdraw]: Withdraw sould decrease users' balance through balanceService[^balanceService]
+[^web3Deposit]: Deposit should check transaction by it's hash and chain name and increase balance through balanceService
+[^web3Withdraw]: Withdraw sould decrease users' balance through balanceService
 
 ## Usages
 
 - no usages
 
-# User service[^userService]
+# User service
 
 ## URLs
 
@@ -62,7 +62,7 @@
 
 ## Usages
 
-[^web3Service]: Web3Service
+- Web3Service
 
 
 
