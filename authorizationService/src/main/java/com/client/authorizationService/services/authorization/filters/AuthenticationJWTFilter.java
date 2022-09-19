@@ -1,6 +1,7 @@
 package com.client.authorizationService.services.authorization.filters;
 
 import com.client.authorizationService.errors.messages.ErrorMessage;
+import com.client.authorizationService.models.JWT.JWS;
 import com.client.authorizationService.services.authorization.UserDetailsServiceImplementation;
 import com.client.authorizationService.models.DTO.users.User;
 import com.client.authorizationService.utilities.JWT.JWTUtility;
@@ -23,6 +24,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 public class AuthenticationJWTFilter extends OncePerRequestFilter {
@@ -31,6 +35,8 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImplementation userDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationJWTFilter.class);
+    @Autowired
+    private JWS jws;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,6 +52,9 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_BANNED);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
+                        .atZone(ZoneId.systemDefault()).toInstant());
+                response.setHeader("Authorization", String.format("Bearer %s", jws.generateJWSWithTime(username, exp)));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

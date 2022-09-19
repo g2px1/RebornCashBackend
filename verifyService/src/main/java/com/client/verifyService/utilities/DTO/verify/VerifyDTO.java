@@ -2,9 +2,9 @@ package com.client.verifyService.utilities.DTO.verify;
 
 public class VerifyDTO {
     public String username;
-    public boolean authorized;
+    public Boolean authorized;
 
-    public VerifyDTO(String username, boolean authorized) {
+    public VerifyDTO(String username, Boolean authorized) {
         this.username = username;
         this.authorized = authorized;
     }

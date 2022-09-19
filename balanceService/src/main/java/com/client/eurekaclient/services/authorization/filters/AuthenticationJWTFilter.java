@@ -1,6 +1,7 @@
 package com.client.eurekaclient.services.authorization.filters;
 
 import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.models.DTO.JWT.JWS;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.services.authorization.UserDetailsServiceImplementation;
 import com.client.eurekaclient.services.openfeign.verify.VerifyInterface;
@@ -20,8 +21,12 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 public class AuthenticationJWTFilter extends OncePerRequestFilter {
@@ -32,6 +37,8 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationJWTFilter.class);
     @Autowired
     private VerifyInterface verifyInterface;
+    @Autowired
+    private JWS jws;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -47,6 +54,9 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 if (user.isTwoFA() && verifyInterface.isExistVerify(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.NEED_TO_PASS_2FA);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
+                        .atZone(ZoneId.systemDefault()).toInstant());
+                response.setHeader("Authorization", String.format("Bearer %s", jws.generateJWSWithTime(username, exp)));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

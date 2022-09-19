@@ -45,6 +45,17 @@ public class JWS {
         return signedJWT.serialize();
     }
 
+    public String generateJWSWithTime(String username, Date date) {
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder().issuer("https://reborn.cash").jwtID(UUID.randomUUID().toString()).audience("https://reborn.cash").claim("username", username).expirationTime(date).build();
+        SignedJWT signedJWT = new SignedJWT(jwsHeader, jwtClaimsSet);
+        try {
+            signedJWT.sign(new ECDSASigner(this.ecKey));
+        } catch (JOSEException e) {
+            logger.error(e.getMessage());
+        }
+        return signedJWT.serialize();
+    }
+
     public  boolean validateJWS(String jws) {
         try {
             JWSVerifier verifier = new ECDSAVerifier(this.ecKey.toECPublicKey());
