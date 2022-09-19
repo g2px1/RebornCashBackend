@@ -42,12 +42,6 @@ public class AuthorizationService {
     private UserInterface userInterface;
     @Autowired
     private VerifyInterface verifyInterface;
-    @Value("${app.url.recaptcha}")
-    private String recatpchaUrl;
-    @Value("${app.secretKey.recaptcha}")
-    private String recaptchaSecretKey;
-    @Value("${app.scoresLevel.recaptcha}")
-    private BigDecimal scoresLevel;
     @Autowired
     private volatile JWS jws;
     @Autowired

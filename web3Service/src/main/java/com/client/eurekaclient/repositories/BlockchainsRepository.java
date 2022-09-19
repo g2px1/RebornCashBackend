@@ -7,10 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BlockchainsRepository extends MongoRepository<BlockchainData, String> {
-//    Page<BlockchainData> findAll(@NotNull Pageable pageable);
     Page<BlockchainData> findByPlatform(@NotNull String platform, Pageable pageable);
-    BlockchainData findByName(@NotNull String name, Pageable pageable);
+    Optional<BlockchainData> findByName(@NotNull String name);
     List<BlockchainData> findAll();
 }

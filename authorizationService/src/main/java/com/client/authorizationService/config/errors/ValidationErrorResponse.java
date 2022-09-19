@@ -1,7 +1,5 @@
 package com.client.authorizationService.config.errors;
 
-import com.agk.nftGame.config.Violation;
-
 import java.util.List;
 
 public class ValidationErrorResponse {

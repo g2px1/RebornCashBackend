@@ -3,22 +3,49 @@ package com.client.eurekaclient.models.request;
 import java.math.BigDecimal;
 
 public class TransactionRequest {
-    public String address;
-    public BigDecimal amount;
+    public String recipientAddress;
+    public String senderAddress;
+    public String chainName;
+    public String username;
+    public double amount;
 
-    public String getAddress() {
-        return address;
+    public String getRecipientAddress() {
+        return recipientAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setRecipientAddress(String recipientAddress) {
+        this.recipientAddress = recipientAddress;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getSenderAddress() {
+        return senderAddress;
+    }
+
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
+    }
+
+    public String getChainName() {
+        return chainName;
+    }
+
+    public void setChainName(String chainName) {
+        this.chainName = chainName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

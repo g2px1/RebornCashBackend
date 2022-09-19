@@ -15,6 +15,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,12 +25,12 @@ public class Web3Service {
     private BlockchainsRepository blockchainsRepository;
     @Autowired
     private TransactionsRepository transactionsRepository;
-    private final Map<String, BlockchainData> blockchainDataList = blockchainsRepository.findAll().stream().collect(Collectors.toMap(BlockchainData::getName, Function.identity()));
     private static final Function<Double, Double> rounder = j -> Math.round(j * 10000.0) / 10000.0;
 
     public ResponseEntity<Object> sendStableCoinTransaction(String recipientAddress, String chainName, double amount, String username) {
-        if (!blockchainDataList.containsKey(chainName)) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null);
-        BlockchainData blockchainData = blockchainDataList.get(chainName);
+        Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
+        if (blockchainDataOptional.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null);
+        BlockchainData blockchainData = blockchainDataOptional.get();
         StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
         amount = Web3Service.rounder.apply(amount);
         BigInteger bigIntegerAmount = BigInteger.valueOf((long) (amount * 10000)).multiply(BigInteger.valueOf(10).pow(14));
@@ -43,8 +44,9 @@ public class Web3Service {
         }
     }
     public ResponseEntity<Object> sendGameTransaction(String recipientAddress, String chainName, double amount, String username) {
-        if (!blockchainDataList.containsKey(chainName)) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null);
-        BlockchainData blockchainData = blockchainDataList.get(chainName);
+        Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
+        if (blockchainDataOptional.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null);
+        BlockchainData blockchainData = blockchainDataOptional.get();
         StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
         amount = Web3Service.rounder.apply(amount);
         BigInteger bigIntegerAmount = BigInteger.valueOf((long) (amount * 10000)).multiply(BigInteger.valueOf(10).pow(14));
