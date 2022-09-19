@@ -1,6 +1,4 @@
-package com.client.eurekaclient.models.request;
-
-import java.math.BigDecimal;
+package com.client.eurekaclient.models.request.web3;
 
 public class TransactionRequest {
     public String recipientAddress;

@@ -1,6 +1,6 @@
-package com.client.authorizationService.services.openfeign.verify;
+package com.client.eurekaclient.services.openfeign.verify;
 
-import com.client.authorizationService.models.DTO.verify.VerifyDTO;
+import com.client.eurekaclient.models.DTO.verify.VerifyDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

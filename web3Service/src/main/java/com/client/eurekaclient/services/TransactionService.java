@@ -23,4 +23,10 @@ public class TransactionService {
         Page<Transaction> page = transactionsRepository.findByUsernameAndChainName(username, chain, paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent(), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
     }
+
+    public ResponseEntity<Object> saveTransaction(String username, String chainName, String hash) {
+        if (transactionsRepository.existsByHash(hash)) return ResponseHandler.generateResponse("transaction already exists.", HttpStatus.BAD_REQUEST, false);
+        transactionsRepository.save(new Transaction(hash, chainName, username));
+        return ResponseHandler.generateResponse(null, HttpStatus.BAD_REQUEST, true);
+    }
 }

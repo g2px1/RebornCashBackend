@@ -17,5 +17,5 @@ public class VerifyController {
     @PostMapping("/deleteVerify")
     public void deleteVerify(VerifyDTO verifyDTO) { verifyService.deleteVerify(verifyDTO); }
     @GetMapping("/isExistVerify/{name}")
-    public void isExistVerify(@PathVariable String name) { verifyService.existsVerify(name); }
+    public boolean isExistVerify(@PathVariable String name) { return verifyService.existsVerify(name); }
 }

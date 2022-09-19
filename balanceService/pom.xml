@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.client</groupId>
-    <artifactId>unitService</artifactId>
-    <version>0.1</version>
-    <name>unitService</name>
-    <description>unitService</description>
+    <artifactId>eurekaClient</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>eurekaClient</name>
+    <description>eurekaClient</description>
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
@@ -31,14 +31,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
             <version>2.7.3</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -54,9 +52,20 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j256.two-factor-auth</groupId>
+            <artifactId>two-factor-auth</artifactId>
+            <version>1.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
         <dependency>
@@ -75,26 +84,47 @@
             <artifactId>spring-security-config</artifactId>
             <version>5.7.3</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
         <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.24.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.j256.two-factor-auth</groupId>
-            <artifactId>two-factor-auth</artifactId>
-            <version>1.3</version>
-        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20211205</version>
+            <version>20220320</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.web3j/core -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.9.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.web3j/abi -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>abi</artifactId>
+            <version>4.9.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.web3j/contracts -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>contracts</artifactId>
+            <version>4.9.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.web3j/utils -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>utils</artifactId>
+            <version>4.9.4</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
