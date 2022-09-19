@@ -42,6 +42,7 @@
 # To do list:
 1) Fixed bug with increasing balance by sending NFT to our address and increasing user's balance by nftID
 
+# MongoDB installing
 
 ```bash
 sudo service mongod stop 
