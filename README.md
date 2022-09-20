@@ -29,6 +29,15 @@
 25) https://dzone.com/articles/using-nimbus-jose-jwt-in-spring-applications-why-a
 26) https://habr.com/ru/company/ruvds/blog/686628/
 
+### Spring tutorials
+1) https://github.com/spring-projects/spring-authorization-server/tree/main/samples/default-authorizationserver/src/main/java/sample
+2) https://habr.com/ru/company/otus/blog/570130/
+3) https://docs.spring.io/spring-authorization-server/docs/current-SNAPSHOT/api/org/springframework/security/oauth2/server/authorization/client/JdbcRegisteredClientRepository.html
+4) https://docs.spring.io/spring-authorization-server/docs/current-SNAPSHOT/api/org/springframework/security/oauth2/server/authorization/client/RegisteredClient.html#hashCode()
+5) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/getting-started.html
+6) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/core-model-components.html#registered-client-repository
+
+
 ## Some ideas:
 `spring-boot-starter-oauth2-client` - should be added on microsevice which needs to have aouthorization
 1) Need to copy UserDetailsImplementation to `@Bean` which returns UserDetails cause UserDetails contains authorities(such as ADMIN, MODERATOR, USER)
