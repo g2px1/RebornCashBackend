@@ -4,13 +4,14 @@ import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Serializable {
+public class User extends RegisteredClient implements Serializable {
   private String id;
   @NotBlank
   @Size(max = 20)

@@ -41,13 +41,13 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private VerifyInterface verifyInterface;
     @Autowired
     private KeyInterface keyInterface;
-    @Autowired
-    private JWS jws;
+    private JWS jws = new JWS(null);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            if (jws.getEcKey() == null) jws.setEcKey(ECKey.parse(keyInterface.getKey()));
+            if (jws.getEcKey() == null) jws.setEcKey(ECKey.parse(this.keyInterface.getKey()));
+            if (jwtUtility.getJws() == null) jwtUtility.setJws(this.jws);
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtility.validateJwtToken(jwt)) {
                 String username = jwtUtility.getUserNameFromJwtToken(jwt);
@@ -61,7 +61,7 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
                         .atZone(ZoneId.systemDefault()).toInstant());
-                response.setHeader("Authorization", String.format("Bearer %s", jws.generateJWSWithTime(username, exp)));
+                response.setHeader("AccessToken", jws.generateJWSWithTime(username, exp));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

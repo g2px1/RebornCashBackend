@@ -25,6 +25,11 @@ public class JWS {
     private JWSHeader jwsHeader;
     private static final Logger logger = LoggerFactory.getLogger(JWS.class);
 
+    public JWS(ECKey ecKey) {
+        this.ecKey = ecKey;
+        jwsHeader = new JWSHeader.Builder(this.currentJWSAlgorithm).type(JOSEObjectType.JWT).keyID(this.keyId).build();
+    }
+
     public JWS() {
         try {
             this.ecKey = new ECKeyGenerator(this.currentCurve).keyID(this.keyId).generate();

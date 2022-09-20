@@ -15,8 +15,7 @@ import java.text.ParseException;
 
 @Component
 public class JWTUtility {
-    @Autowired
-    private volatile JWS jws;
+    private volatile JWS jws = null;
     private static final Logger logger = LoggerFactory.getLogger(JWTUtility.class);
 
     public String getUserNameFromJwtToken(String token) {
@@ -38,5 +37,13 @@ public class JWTUtility {
             logger.error("Invalid JWT signature: {}", ex.getMessage());
         }
         return false;
+    }
+
+    public JWS getJws() {
+        return jws;
+    }
+
+    public void setJws(JWS jws) {
+        this.jws = jws;
     }
 }

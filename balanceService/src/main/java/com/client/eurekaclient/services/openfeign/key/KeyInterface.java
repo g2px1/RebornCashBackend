@@ -7,6 +7,6 @@ import java.util.Map;
 
 @FeignClient(name = "authorizationService")
 public interface KeyInterface {
-    @GetMapping("/getKey")
+    @GetMapping("/keyService/getKey")
     Map<String, Object> getKey();
 }
