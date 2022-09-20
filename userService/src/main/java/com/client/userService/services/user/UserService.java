@@ -27,6 +27,11 @@ public class UserService {
     }
     public Boolean saveUser(User requestUser) {
         requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
+        usersRepository.save(requestUser);
+        return true;
+    }
+    public Boolean registerUser(User requestUser) {
+        requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
         if(usersRepository.existsByUsername(requestUser.getUsername()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_EXISTS);
         usersRepository.save(requestUser);

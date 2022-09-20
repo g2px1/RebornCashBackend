@@ -22,6 +22,8 @@ public class UserController {
     }
     @PostMapping("/saveUser")
     public Boolean saveUser(@RequestBody User requestUser) { return userService.saveUser(requestUser); }
+    @PostMapping("/register")
+    public Boolean registerUser(@RequestBody User requestUser) { return userService.registerUser(requestUser); }
     @GetMapping("/isExists/{name}")
     public Boolean isExists(@PathVariable String name) { return userService.userExists(name); }
     @GetMapping("/isExistsByEmail/{email}")
@@ -30,8 +32,9 @@ public class UserController {
     public Boolean isExistsByEmail(@PathVariable String name, @PathVariable String email) { return userService.userExistsByAll(name, email); }
     @GetMapping("/changePasswordIfExists/{name}/{password}/{code}")
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
-    @GetMapping("/test")
-    public User test() {
-        return userService.getUser("g2px1").get();
+    @PostMapping("/test")
+    public void test(@RequestBody User user) {
+        System.out.println(user.getUsername());
+        System.out.println(user.isTwoFA());
     }
 }

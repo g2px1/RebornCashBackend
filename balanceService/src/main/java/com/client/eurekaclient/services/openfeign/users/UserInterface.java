@@ -15,6 +15,8 @@ public interface UserInterface {
     Optional<User> getUser(@PathVariable String name);
     @PostMapping("/userService/saveUser")
     Boolean saveUser(@RequestBody User requestUser);
+    @PostMapping("/userService/register")
+    Boolean registerUser(@RequestBody User requestUser);
     @GetMapping("/userService/isExists/{name}")
     Boolean isExists(@PathVariable String name);
     @GetMapping("/userService/isExistsByEmail/{email}")
@@ -24,3 +26,4 @@ public interface UserInterface {
     @GetMapping("/userService/changePasswordIfExists/changePasswordIfExists/{name}/{password}/{code}")
     Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password, @PathVariable String code);
 }
+

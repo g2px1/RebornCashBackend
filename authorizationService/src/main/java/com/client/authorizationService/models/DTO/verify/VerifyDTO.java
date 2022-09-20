@@ -2,9 +2,9 @@ package com.client.authorizationService.models.DTO.verify;
 
 public class VerifyDTO {
     public String username;
-    public Boolean authorized;
+    public boolean authorized;
 
-    public VerifyDTO(String username, Boolean authorized) {
+    public VerifyDTO(String username, boolean authorized) {
         this.username = username;
         this.authorized = authorized;
     }

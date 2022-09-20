@@ -4,8 +4,10 @@ import com.client.eurekaclient.messages.ErrorMessage;
 import com.client.eurekaclient.models.DTO.JWT.JWS;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.services.authorization.UserDetailsServiceImplementation;
+import com.client.eurekaclient.services.openfeign.key.KeyInterface;
 import com.client.eurekaclient.services.openfeign.verify.VerifyInterface;
 import com.client.eurekaclient.utilities.JWT.JWTUtility;
+import com.nimbusds.jose.jwk.ECKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,14 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     @Autowired
     private VerifyInterface verifyInterface;
     @Autowired
+    private KeyInterface keyInterface;
+    @Autowired
     private JWS jws;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            if (jws.getEcKey() == null) jws.setEcKey(ECKey.parse(keyInterface.getKey()));
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtility.validateJwtToken(jwt)) {
                 String username = jwtUtility.getUserNameFromJwtToken(jwt);

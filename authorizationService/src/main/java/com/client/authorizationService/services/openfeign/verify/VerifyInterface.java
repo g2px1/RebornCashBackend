@@ -5,13 +5,14 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "verifyService")
 public interface VerifyInterface {
     @PostMapping("/verifyService/setVerify")
-    void setVerify(VerifyDTO verifyDTO);
+    void setVerify(@RequestBody VerifyDTO verifyDTO);
     @PostMapping("/verifyService/deleteVerify")
-    void deleteVerify(VerifyDTO verifyDTO);
+    void deleteVerify(@RequestBody VerifyDTO verifyDTO);
     @GetMapping("/verifyService/isExistVerify/{name}")
     boolean isExistVerify(@PathVariable String name);
 }
