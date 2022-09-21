@@ -36,6 +36,7 @@
 4) https://docs.spring.io/spring-authorization-server/docs/current-SNAPSHOT/api/org/springframework/security/oauth2/server/authorization/client/RegisteredClient.html#hashCode()
 5) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/getting-started.html
 6) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/core-model-components.html#registered-client-repository
+7) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/configuration-model.html
 
 
 ## Some ideas:
