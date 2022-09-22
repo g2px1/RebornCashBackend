@@ -32,9 +32,6 @@ public class UserController {
     public Boolean isExistsByEmail(@PathVariable String name, @PathVariable String email) { return userService.userExistsByAll(name, email); }
     @GetMapping("/changePasswordIfExists/{name}/{password}/{code}")
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
-    @PostMapping("/test")
-    public void test(@RequestBody User user) {
-        System.out.println(user.getUsername());
-        System.out.println(user.isTwoFA());
-    }
+    @PostMapping("/updateUser")
+    public Boolean test(@RequestBody User user) { return userService.updateUser(user); }
 }

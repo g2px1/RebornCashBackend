@@ -50,4 +50,9 @@ public class UserService {
         usersRepository.save(user.get());
         return true;
     }
+    public Boolean updateUser(User user) {
+        if (!usersRepository.existsByUsername(user.getUsername())) return false;
+        usersRepository.save(user);
+        return true;
+    }
 }

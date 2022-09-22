@@ -37,8 +37,6 @@ public class Web3Service {
     @Autowired
     private UserInterface userInterface;
     @Autowired
-    private LockRepository lockRepository;
-    @Autowired
     private FairLock fairLock;
     private static final Function<Double, Double> rounder = j -> Math.round(j * 10000.0) / 10000.0;
     private static final Logger logger = LoggerFactory.getLogger(Web3Service.class);
