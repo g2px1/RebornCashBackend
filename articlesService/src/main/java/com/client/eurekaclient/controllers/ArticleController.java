@@ -6,6 +6,7 @@ import com.client.eurekaclient.models.request.ArticleSeekingRequest;
 import com.client.eurekaclient.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,7 +25,13 @@ public class ArticleController {
         return articleService.findByUuid(articleSeekingRequest.uuid);
     }
     @PostMapping("/save")
-    public ResponseEntity<Object> findByUuid(@RequestBody Article article) {
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> save(@RequestBody Article article) {
         return articleService.save(article);
+    }
+    @PostMapping("/update")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> update(@RequestBody Article article) {
+        return articleService.update(article);
     }
 }

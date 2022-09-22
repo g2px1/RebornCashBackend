@@ -31,6 +31,12 @@ public class ArticleService {
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent(), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
     }
     public ResponseEntity<Object> save(Article article) {
+        if (articleRepository.existsByHeading(article.getHeading())) return ResponseHandler.generateResponse(ErrorMessage.ARTICLE_EXISTS, HttpStatus.BAD_REQUEST, null);
+        articleRepository.save(article);
+        return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
+    }
+    public ResponseEntity<Object> update(Article article) {
+        if (!articleRepository.existsByHeading(article.getHeading())) return ResponseHandler.generateResponse(ErrorMessage.ARTICLE_EXISTS, HttpStatus.BAD_REQUEST, null);
         articleRepository.save(article);
         return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
     }

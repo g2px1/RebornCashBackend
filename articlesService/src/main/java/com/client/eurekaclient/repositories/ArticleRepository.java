@@ -12,4 +12,5 @@ public interface ArticleRepository extends MongoRepository<Article, String> {
     Optional<Article> findByUuid(String uuid);
     Page<Article> findAllByType(String type, Pageable pageable);
     List<Article> findAll();
+    boolean existsByHeading(String heading);
 }
