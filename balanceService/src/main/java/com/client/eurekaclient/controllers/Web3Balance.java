@@ -27,6 +27,6 @@ public class Web3Balance {
     @PostMapping("/withdrawGame")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> withdrawGame(@RequestBody TransactionRequest transactionRequest, Authentication authentication) {
-        return web3Service.sendGameTransaction(transactionRequest.recipientAddress, transactionRequest.chainName, transactionRequest.amount, authentication.getName());
+        return web3Service.sendGameTransaction(transactionRequest.recipientAddress, transactionRequest.chainName, transactionRequest.amount, authentication.getName(), transactionRequest.code);
     }
 }

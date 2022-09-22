@@ -23,8 +23,4 @@ public abstract class ErrorMessage {
     public static String TRANSACTION_ERROR;
     @Value("${app.error.message.LOW_GAME_BALANCE}")
     public static String LOW_GAME_BALANCE;
-    @Value("${app.error.message.INVALID_CODE}")
-    public static String INVALID_CODE;
-    @Value("${app.error.message.LOCK}")
-    public static String LOCK;
 }
