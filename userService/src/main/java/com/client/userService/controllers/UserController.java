@@ -2,6 +2,7 @@ package com.client.userService.controllers;
 
 import com.client.userService.models.request.UserSeekingRequest;
 import com.client.userService.models.DTO.users.User;
+import com.client.userService.models.response.UserResponse;
 import com.client.userService.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class UserController {
     @GetMapping("/changePasswordIfExists/{name}/{password}/{code}")
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
     @PostMapping("/updateUser")
-    public Boolean updateUser(@RequestBody User user) { return userService.updateUser(user); }
+    public Boolean updateUser(@RequestBody UserResponse userResponse) { return userService.updateUser(userResponse); }
     @PostMapping("/loadUsers")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> loadUsers(@RequestBody UserSeekingRequest userSeekingRequest) { return userService.loadUsersByPagination(userSeekingRequest); }

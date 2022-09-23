@@ -7,18 +7,20 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class UserResponse {
+    public String id;
     public String username;
     public String email;
     public BigDecimal balance;
     public String status;
     public List<Role> roles;
 
-    public UserResponse(String username, String email, BigDecimal balance, String status, List<Role> roles) {
+    public UserResponse(String username, String email, BigDecimal balance, String status, List<Role> roles, String id) {
         this.username = username;
         this.email = email;
         this.balance = balance;
         this.status = status;
         this.roles = roles;
+        this.id = id;
     }
 
     public String getUsername() {
@@ -62,6 +64,6 @@ public class UserResponse {
     }
 
     public static UserResponse build(User user) {
-        return new UserResponse(user.getUsername(), user.getEmail(), user.getBalance(), user.getStatus(), user.getRoles());
+        return new UserResponse(user.getUsername(), user.getEmail(), user.getBalance(), user.getStatus(), user.getRoles(), user.getId());
     }
 }

@@ -1,5 +1,6 @@
 package com.client.userService.models.DTO.users;
 
+import com.client.userService.models.response.UserResponse;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -116,6 +117,13 @@ public class User implements Serializable {
   public void setNonce(int nonce) {
     this.nonce = nonce;
   }
+
+  public void updateUser(UserResponse userResponse) {
+    if (!userResponse.status.equalsIgnoreCase(this.status)) this.status = userResponse.status;
+    if (!userResponse.balance.equals(this.balance)) this.balance = userResponse.balance;
+    if (!userResponse.roles.equals(this.roles)) this.roles = userResponse.roles;
+  }
+
   @Override
   public String toString() {
     return String.format("{id=%s, username=%s, email=%s, userNumber=%s, password=%s, balance=%s, twoFA=%s, status=%s, secretKey=%s}", this.id, this.username, this.email, this.userNumber, this.password, this.balance, this.twoFA, this.status, this.secretKey);

@@ -59,19 +59,21 @@ public class UserService {
         usersRepository.save(user.get());
         return true;
     }
-    public Boolean updateUser(User user) {
-        if (!usersRepository.existsByUsername(user.getUsername())) return false;
-        usersRepository.save(user);
+    public Boolean updateUser(UserResponse userResponse) {
+        Optional<User> user = usersRepository.findById(userResponse.id);
+        if (user.isEmpty()) return false;
+        user.get().updateUser(userResponse);
+        usersRepository.save(user.get());
         return true;
     }
 
     public ResponseEntity<Object> loadUsersByPagination(UserSeekingRequest userSeekingRequest) {
         if (userSeekingRequest.status == null) {
-            Pageable paging = PageRequest.of(userSeekingRequest.page, 5);
+            Pageable paging = PageRequest.of(userSeekingRequest.page, 10);
             Page<User> page = usersRepository.findAll(paging);
             return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(UserResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
         }
-        Pageable paging = PageRequest.of(userSeekingRequest.page, 5);
+        Pageable paging = PageRequest.of(userSeekingRequest.page, 10);
         Page<User> page = usersRepository.findAllByStatus(userSeekingRequest.status, paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(UserResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
     }
