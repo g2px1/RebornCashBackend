@@ -36,6 +36,7 @@ public class UserController {
     @GetMapping("/changePasswordIfExists/{name}/{password}/{code}")
     public Boolean changePasswordIfExists(@PathVariable String name, @PathVariable String password , @PathVariable String code) throws GeneralSecurityException { return userService.changePasswordIfExists(name, password, code); }
     @PostMapping("/updateUser")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public Boolean updateUser(@RequestBody UserResponse userResponse) { return userService.updateUser(userResponse); }
     @PostMapping("/loadUsers")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
