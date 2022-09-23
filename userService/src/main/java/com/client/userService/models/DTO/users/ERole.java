@@ -1,4 +1,4 @@
-package com.client.userService.models.dbModels.users;
+package com.client.userService.models.DTO.users;
 
 public enum ERole {
   ROLE_USER,

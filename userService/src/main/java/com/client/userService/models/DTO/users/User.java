@@ -1,4 +1,4 @@
-package com.client.userService.models.dbModels.users;
+package com.client.userService.models.DTO.users;
 
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import org.springframework.data.annotation.Id;

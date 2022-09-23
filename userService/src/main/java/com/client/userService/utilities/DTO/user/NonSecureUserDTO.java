@@ -1,6 +1,6 @@
 package com.client.userService.utilities.DTO.user;
 
-import com.client.userService.models.dbModels.users.User;
+import com.client.userService.models.DTO.users.User;
 
 import java.math.BigDecimal;
 

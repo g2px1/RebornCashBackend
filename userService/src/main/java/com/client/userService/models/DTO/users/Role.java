@@ -1,4 +1,4 @@
-package com.client.userService.models.dbModels.users;
+package com.client.userService.models.DTO.users;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

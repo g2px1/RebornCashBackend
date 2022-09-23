@@ -1,7 +1,7 @@
 package com.client.userService.utilities.DTO.user;
 
-import com.client.userService.models.dbModels.users.Role;
-import com.client.userService.models.dbModels.users.User;
+import com.client.userService.models.DTO.users.Role;
+import com.client.userService.models.DTO.users.User;
 
 import java.util.List;
 
