@@ -4,6 +4,18 @@ public class NFTSeekingRequest {
     public long nftId;
     public String address;
 
+    public NFTSeekingRequest() {
+    }
+
+    public NFTSeekingRequest(long nftId) {
+        this.nftId = nftId;
+    }
+
+    public NFTSeekingRequest(long nftId, String address) {
+        this.nftId = nftId;
+        this.address = address;
+    }
+
     public long getNftId() {
         return nftId;
     }

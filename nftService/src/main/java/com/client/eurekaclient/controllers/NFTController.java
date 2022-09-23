@@ -32,7 +32,8 @@ public class NFTController {
         return nftService.existsByIndex(nftSeekingRequest.index);
     }
     @PostMapping("/findByIndex")
-    public ResponseEntity<Object> findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
+    public NFT findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
+        System.out.println(nftSeekingRequest.index);
         return nftService.findByIndex(nftSeekingRequest.index);
     }
     @PostMapping("/save")

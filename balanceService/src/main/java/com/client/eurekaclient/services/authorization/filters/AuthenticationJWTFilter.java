@@ -41,7 +41,7 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private VerifyInterface verifyInterface;
     @Autowired
     private KeyInterface keyInterface;
-    private JWS jws = new JWS(null);
+    private volatile JWS jws = new JWS(null);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

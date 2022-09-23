@@ -19,7 +19,7 @@ public class NFTService {
     @Autowired
     private NFTRepository NFTRepository;
 
-    public ResponseEntity<Object> findByIndex(long index) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByIndex(index));}
+    public NFT findByIndex(long index) { return NFTRepository.findByIndex(index); }
     public ResponseEntity<Object> existsByIndex(long index) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.existsByIndex(index));}
     public ResponseEntity<Object> findByName(String name) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByName(name));}
     public ResponseEntity<Object> findByUuid(String uuid) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByUuid(uuid));}
