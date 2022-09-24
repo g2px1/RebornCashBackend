@@ -37,6 +37,7 @@
 5) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/getting-started.html
 6) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/core-model-components.html#registered-client-repository
 7) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/configuration-model.html
+8) https://supunbhagya.medium.com/spring-oauth2-resourceserver-oauth2-security-authorization-code-grant-flow-9eb72fd5d27d
 
 
 ## Some ideas:
