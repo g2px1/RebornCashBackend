@@ -69,10 +69,16 @@ sudo chown mongodb:mongodb /tmp/mongodb-27017.sock
 ```
 ```bash
 db.createUser(
-{
-user: "admin",
-pwd: "password",
-roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
-}
+  {
+    user: "admin",
+    pwd: "password",
+    roles: [ 
+      { 
+        role: "userAdminAnyDatabase", 
+        db: "admin" 
+      }, 
+      "readWriteAnyDatabase" 
+    ]
+  }
 )
 ```
