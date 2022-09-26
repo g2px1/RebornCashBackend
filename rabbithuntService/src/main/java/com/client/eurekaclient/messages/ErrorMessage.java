@@ -23,4 +23,24 @@ public abstract class ErrorMessage {
     public static String TRANSACTION_ERROR;
     @Value("${app.error.message.LOW_GAME_BALANCE}")
     public static String LOW_GAME_BALANCE;
+    @Value("${app.error.message.TRAP_NOT_EXIST}")
+    public static String TRAP_NOT_EXIST;
+    @Value("${app.error.message.INVALID_CODE}")
+    public static String INVALID_CODE;
+    @Value("${app.error.message.TRAP_EXPIRED}")
+    public static String TRAP_EXPIRED;
+    @Value("${app.error.message.METAMASK_ERROR}")
+    public static String METAMASK_ERROR;
+    @Value("${app.error.message.NFT_NOT_EXISTS}")
+    public static String NFT_NOT_EXISTS;
+    @Value("${app.error.message.OWNERSHIP_ERROR}")
+    public static String OWNERSHIP_ERROR;
+    @Value("${app.error.message.INVALID_DATA}")
+    public static String INVALID_DATA;
+    @Value("${app.error.message.TRAP_OUT_OF_EMISSION}")
+    public static String TRAP_OUT_OF_EMISSION;
+    @Value("${app.error.message.NOT_ENOUGH_CARROTS}")
+    public static String NOT_ENOUGH_CARROTS;
+    @Value("${app.error.message.LOCK}")
+    public static String LOCK;
 }

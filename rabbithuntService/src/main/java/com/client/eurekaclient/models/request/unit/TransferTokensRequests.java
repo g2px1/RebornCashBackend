@@ -3,8 +3,18 @@ package com.client.eurekaclient.models.request.unit;
 public class TransferTokensRequests {
     public String recipient;
     public String sender;
-    public String amount;
+    public double amount;
     public String tokenName;
+
+    public TransferTokensRequests() {
+    }
+
+    public TransferTokensRequests(String recipient, String sender, double amount, String tokenName) {
+        this.recipient = recipient;
+        this.sender = sender;
+        this.amount = amount;
+        this.tokenName = tokenName;
+    }
 
     public String getRecipient() {
         return recipient;
@@ -14,11 +24,11 @@ public class TransferTokensRequests {
         this.recipient = recipient;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

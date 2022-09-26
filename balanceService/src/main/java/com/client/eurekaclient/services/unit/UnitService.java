@@ -5,6 +5,8 @@ import com.client.eurekaclient.utilities.unit.Unit;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UnitService {
     public String errorContainer = """
@@ -13,10 +15,10 @@ public class UnitService {
     public JSONObject sendTokens(TransferTokensRequests transferTokensRequests) {
         try {
             if (transferTokensRequests.sender.equals("merchant")) {
-                return Unit.sendFromMerchantTokens(transferTokensRequests.recipient, Double.parseDouble(transferTokensRequests.amount), transferTokensRequests.tokenName);
+                return Unit.sendFromMerchantTokens(transferTokensRequests.recipient, transferTokensRequests.amount, transferTokensRequests.tokenName);
             }
             if (transferTokensRequests.recipient.equals("merchant")) {
-                return Unit.sendToMerchantTokens(transferTokensRequests.sender, Double.parseDouble(transferTokensRequests.amount), transferTokensRequests.tokenName);
+                return Unit.sendToMerchantTokens(transferTokensRequests.sender, transferTokensRequests.amount, transferTokensRequests.tokenName);
             }
             return new JSONObject(String.format(errorContainer, "invalid transaction"));
         } catch (Exception e) {
@@ -25,7 +27,7 @@ public class UnitService {
     }
     public JSONObject sendUnits(TransferTokensRequests transferTokensRequests) {
         try {
-            return Unit.sendUnitTransaction(transferTokensRequests.recipient, transferTokensRequests.sender, Double.parseDouble(transferTokensRequests.amount));
+            return Unit.sendUnitTransaction(transferTokensRequests.recipient, transferTokensRequests.sender, transferTokensRequests.amount);
         } catch (Exception e) {
             return new JSONObject(String.format("error occurred: undefined"));
         }
@@ -44,11 +46,11 @@ public class UnitService {
             return new JSONObject(String.format("error occurred: not found"));
         }
     }
-    public JSONObject getBalance(String address) {
+    public Optional<JSONObject> getBalance(String address) {
         try {
-            return Unit.getBalance(address);
+            return Optional.of(Unit.getBalance(address));
         } catch (Exception e) {
-            return new JSONObject(String.format("error occurred: not found"));
+            return Optional.empty();
         }
     }
     public JSONObject getBlockHeight() {

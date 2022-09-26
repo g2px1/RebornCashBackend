@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/unitBalanceService/")
@@ -33,8 +35,8 @@ public class UnitBalance {
     public JSONObject txPool() {
         return unitService.getTxPool();
     }
-    @PostMapping("/getBalance")
-    public JSONObject getBalance(@RequestBody String address) {
+    @PostMapping("/getBalance/{address}")
+    public Optional<JSONObject> getBalance(@PathVariable String address) {
         return unitService.getBalance(address);
     }
 }

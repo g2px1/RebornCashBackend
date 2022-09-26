@@ -5,8 +5,10 @@ import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.web3.BlockchainData;
+import com.client.eurekaclient.models.web3.ConnectedWallet;
 import com.client.eurekaclient.models.web3.Transaction;
 import com.client.eurekaclient.repositories.BlockchainsRepository;
+import com.client.eurekaclient.repositories.ConnectedWalletsRepository;
 import com.client.eurekaclient.repositories.LockRepository;
 import com.client.eurekaclient.repositories.TransactionsRepository;
 import com.client.eurekaclient.services.lock.FairLock;
@@ -36,6 +38,8 @@ public class Web3Service {
     private TransactionsRepository transactionsRepository;
     @Autowired
     private UserInterface userInterface;
+    @Autowired
+    private ConnectedWalletsRepository connectedWalletsRepository;
     @Autowired
     private FairLock fairLock;
     private static final Function<Double, Double> rounder = j -> Math.round(j * 10000.0) / 10000.0;
@@ -114,4 +118,21 @@ public class Web3Service {
             return ResponseHandler.generateResponse(String.format(ErrorMessage.TRANSACTION_ERROR, e.getMessage()) , HttpStatus.BAD_REQUEST, null);
         }
     }
+
+    public boolean isWalletOwnerOfNftByIndex(String username, long nftIndex, String chainName) {
+        Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
+        if (blockchainDataOptional.isEmpty()) return false;
+        BlockchainData blockchainData = blockchainDataOptional.get();
+        StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
+        try {
+            Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletsRepository.findByUsername(username);
+            if (optionalConnectedWallet.isEmpty()) return false;
+            return standardContractProvider.getERC721Token(blockchainData.nftContractAddress).ownerOf(BigInteger.valueOf(nftIndex)).send().equalsIgnoreCase(optionalConnectedWallet.get().getAddress());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
 }
+
+//    !W3.getERC721Contract().ownerOf(BigInteger.valueOf(nft.index)).send().equalsIgnoreCase(walletsSignedRepository.findByUsername(authentication.getName()).getAddress())

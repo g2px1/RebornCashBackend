@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/nftService")
@@ -32,7 +34,7 @@ public class NFTController {
         return nftService.existsByIndex(nftSeekingRequest.index);
     }
     @PostMapping("/findByIndex")
-    public NFT findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
+    public Optional<NFT> findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
         System.out.println(nftSeekingRequest.index);
         return nftService.findByIndex(nftSeekingRequest.index);
     }
