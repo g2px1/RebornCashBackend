@@ -13,6 +13,7 @@ public class Token {
     public String name; // token name(e.g carrots, meat etc)
     public BigDecimal supply; // emission of token in UnitChain
     public short type; // int or double. Int is 0 type, Double is 1 type
+    public String tokenType;
 
     public Token() {}
 
@@ -35,6 +36,13 @@ public class Token {
         this.name = name;
         this.supply = supply;
         this.type = type;
+    }
+
+    public Token(String name, BigDecimal supply, short type, String tokenType) {
+        this.name = name;
+        this.supply = supply;
+        this.type = type;
+        this.tokenType = tokenType;
     }
 
     public String getId() {

@@ -86,7 +86,7 @@ public class SecuredTrapService {
         double optionPrice = YahooFinanceRequest.getOptionOptionalRegularMarketPrice(trapRequest.optionName) * 100;
         trapRepository.save(new Trap(StringUtils.capitalize(trapRequest.name.toLowerCase(Locale.ROOT)).trim(), UUID.randomUUID().toString(), trapRequest.imageFile.getOriginalFilename().trim(), trapRequest.cells, trapRequest.created, trapRequest.activeAfter, trapRequest.optionType.trim(), trapRequest.tools.trim(), Math.round(trapRequest.strikePrice), trapRequest.cells, trapRequest.tokenName.trim(), trapRequest.tokenTotalWeight, ((optionPrice * trapRequest.quantityOfLots) / trapRequest.cells), trapRequest.optionName.trim(), true, trapRequest.activeTill, trapRequest.quantityOfLots));
         PostRequest.createTokenTransaction(convertToHex(String.format("{\"name\": \"%s\", \"supply\": %s}", trapRequest.name.toLowerCase(Locale.ROOT).trim(), trapRequest.cells)));
-        tokensRepository.save(new Token(trapRequest.name.toLowerCase(Locale.ROOT).trim(), BigDecimal.valueOf(trapRequest.cells), (short) 1));
+        tokensRepository.save(new Token(trapRequest.name.toLowerCase(Locale.ROOT).trim(), BigDecimal.valueOf(trapRequest.cells), (short) 1, "trap"));
         return ResponseHandler.generateResponse("ok", HttpStatus.OK, true);
     }
 
@@ -158,26 +158,26 @@ public class SecuredTrapService {
         }
 
         Runnable firstHalf = (() -> {
-            List<ScheduledTransaction> layer1ExpiringTransactions = new ArrayList<>();
+            List<ScheduledTransaction> scheduledTransactionArrayList = new ArrayList<>();
             List<CellsTransactions> cellsTransactions = optionalTrapsCellsTransactionsList.get();
             for (int i = 0; i < cellsTransactions.size(); i++) {
                 double amountToTransfer = trap.tokenPerCell * cellsTransactions.get(i).quantity;
                 JSONObject tokenDistribution = unitInterface.sendTokens(new TransferTokensRequests(cellsTransactions.get(i).nftName, "merchant", amountToTransfer, trap.tokenName));
-                layer1ExpiringTransactions.add(new ScheduledTransaction(Instant.now().plusMillis(Constants.FIVE_DAYS_MS).toEpochMilli(), tokenDistribution.getString("hash"), cellsTransactions.get(i).nftName, amountToTransfer, trap.tokenName, false));
+                scheduledTransactionArrayList.add(new ScheduledTransaction(Instant.now().plusMillis(Constants.FIVE_DAYS_MS).toEpochMilli(), tokenDistribution.getString("hash"), cellsTransactions.get(i).nftName, amountToTransfer, trap.tokenName, false));
                 try {
                     TimeUnit.SECONDS.sleep(3);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
             }
-            scheduledTransactionRepository.saveAll(layer1ExpiringTransactions);
+            scheduledTransactionRepository.saveAll(scheduledTransactionArrayList);
             List<CellsPack> cellsPackList = new ArrayList<>();
             cellsPackRepository.findByTrap(trap).forEach(cellsPack -> {
                 double amountToTransfer = trap.tokenPerCell * cellsPack.quantity.doubleValue();
                 unitInterface.sendTokens(new TransferTokensRequests());
                 Optional<JSONObject> tokenDistribution = PostRequest.sendFromMerchantTokensOptional(cellsPack.nftName, amountToTransfer, trap.tokenName);
                 tokenDistribution = PostRequest.sendFromMerchantTokensOptional(cellsPack.nftName, amountToTransfer, trap.tokenName);
-                layer1ExpiringTransactions.add(new ScheduledTransaction(new Date().getTime() + Constants.FIVE_DAYS_MS, tokenDistribution.get().getString("hash"), cellsPack.nftName, amountToTransfer, trap.tokenName, false));
+                scheduledTransactionArrayList.add(new ScheduledTransaction(new Date().getTime() + Constants.FIVE_DAYS_MS, tokenDistribution.get().getString("hash"), cellsPack.nftName, amountToTransfer, trap.tokenName, false));
                 try {
                     TimeUnit.SECONDS.sleep(3);
                 } catch (Exception e) {

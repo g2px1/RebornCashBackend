@@ -11,7 +11,7 @@ public class ScheduledTransaction {
     public String id;
     public long activeTill = new Date().getTime();
     public String unitHash;
-    public String nftUuid;
+    public String nftName;
     public double amount;
     public String tokenName;
     public boolean reverted = false;
@@ -19,10 +19,10 @@ public class ScheduledTransaction {
     public ScheduledTransaction() {
     }
 
-    public ScheduledTransaction(long activeTill, String unitHash, String nftUuid, double amount, String tokenName, boolean reverted) {
+    public ScheduledTransaction(long activeTill, String unitHash, String nftName, double amount, String tokenName, boolean reverted) {
         this.activeTill = activeTill;
         this.unitHash = unitHash;
-        this.nftUuid = nftUuid;
+        this.nftName = nftName;
         this.amount = amount;
         this.tokenName = tokenName;
         this.reverted = reverted;
@@ -52,12 +52,12 @@ public class ScheduledTransaction {
         this.unitHash = unitHash;
     }
 
-    public String getNftUuid() {
-        return nftUuid;
+    public String getNftName() {
+        return nftName;
     }
 
-    public void setNftUuid(String nftUuid) {
-        this.nftUuid = nftUuid;
+    public void setNftName(String nftName) {
+        this.nftName = nftName;
     }
 
     public double getAmount() {

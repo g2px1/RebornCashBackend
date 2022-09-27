@@ -27,4 +27,6 @@ public abstract class ErrorMessage {
     public static String INVALID_CODE;
     @Value("${app.error.message.LOCK}")
     public static String LOCK;
+    @Value("${app.error.message.METAMASK_ERROR}")
+    public static String METAMASK_ERROR;
 }

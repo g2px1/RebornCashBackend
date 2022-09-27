@@ -17,12 +17,22 @@ public abstract class ErrorMessage {
     public static String BOT;
     @Value("${app.error.message.NEED_TO_PASS_2FA}")
     public static String NEED_TO_PASS_2FA;
+    @Value("${app.error.message.NEED_TO_BE_2FA}")
+    public static String NEED_TO_BE_2FA;
     @Value("${app.error.message.CHAIN_NOT_SUPPORTED}")
     public static String CHAIN_NOT_SUPPORTED;
     @Value("${app.error.message.TRANSACTION_ERROR}")
     public static String TRANSACTION_ERROR;
     @Value("${app.error.message.LOW_GAME_BALANCE}")
     public static String LOW_GAME_BALANCE;
+    @Value("${app.error.message.LOW_CARROT_BALANCE}")
+    public static String LOW_CARROT_BALANCE;
+    @Value("${app.error.message.LOW_MEAT_BALANCE}")
+    public static String LOW_MEAT_BALANCE;
+    @Value("${app.error.message.LOW_TOKEN_BALANCE}")
+    public static String LOW_TOKEN_BALANCE;
+    @Value("${app.error.message.BALANCE_NOT_FOUND}")
+    public static String BALANCE_NOT_FOUND;
     @Value("${app.error.message.TRAP_NOT_EXIST}")
     public static String TRAP_NOT_EXIST;
     @Value("${app.error.message.INVALID_CODE}")
@@ -47,4 +57,10 @@ public abstract class ErrorMessage {
     public static String TRAP_CLOSED;
     @Value("${app.error.message.TRAP_IS_FULL}")
     public static String TRAP_IS_FULL;
+    @Value("${app.error.message.BURGER_QUANTITY_ERROR}")
+    public static String BURGER_QUANTITY_ERROR;
+    @Value("${app.error.message.TOKEN_NOT_EXISTS}")
+    public static String TOKEN_NOT_EXISTS;
+    @Value("${app.error.message.API_NOT_AVAILABLE}")
+    public static String API_NOT_AVAILABLE;
 }

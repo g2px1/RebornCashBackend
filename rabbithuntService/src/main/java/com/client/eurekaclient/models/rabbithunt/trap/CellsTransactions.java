@@ -13,6 +13,7 @@ public class CellsTransactions {
     @DBRef
     public Trap trap;
     public String nftName;
+    public String nftUuid;
     public long Date = new Date().getTime();
     public int quantity;
     public String outHash;
@@ -30,6 +31,15 @@ public class CellsTransactions {
         this.quantity = quantity;
         this.outHash = outHash;
         this.inHash = inHash;
+    }
+
+    public CellsTransactions(Trap trap, String nftName, int quantity, String outHash, String inHash, String nftUuid) {
+        this.trap = trap;
+        this.nftName = nftName;
+        this.quantity = quantity;
+        this.outHash = outHash;
+        this.inHash = inHash;
+        this.nftUuid = nftUuid;
     }
 
     public String getId() {
@@ -70,5 +80,29 @@ public class CellsTransactions {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getNftUuid() {
+        return nftUuid;
+    }
+
+    public void setNftUuid(String nftUuid) {
+        this.nftUuid = nftUuid;
+    }
+
+    public String getOutHash() {
+        return outHash;
+    }
+
+    public void setOutHash(String outHash) {
+        this.outHash = outHash;
+    }
+
+    public String getInHash() {
+        return inHash;
+    }
+
+    public void setInHash(String inHash) {
+        this.inHash = inHash;
     }
 }

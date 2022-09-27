@@ -8,6 +8,12 @@ public class TransactionRequest {
     public double amount;
     public String hash;
 
+    public TransactionRequest(String chainName, String username, double amount) {
+        this.chainName = chainName;
+        this.username = username;
+        this.amount = amount;
+    }
+
     public String getRecipientAddress() {
         return recipientAddress;
     }

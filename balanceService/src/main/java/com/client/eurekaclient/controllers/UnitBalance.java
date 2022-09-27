@@ -19,8 +19,8 @@ public class UnitBalance {
     public JSONObject sendTokens(@RequestBody TransferTokensRequests transferTokensRequests) {return unitService.sendTokens(transferTokensRequests);}
     @PostMapping("/sendUnits")
     public JSONObject sendUnits(@RequestBody TransferTokensRequests transferTokensRequests) {return unitService.sendUnits(transferTokensRequests);}
-    @PostMapping("/createToken")
-    public JSONObject createToken(@RequestBody String bytecode) {
+    @PostMapping("/createToken/{bytecode}")
+    public JSONObject createToken(@PathVariable String bytecode) {
         return unitService.createToken(bytecode);
     }
     @PostMapping("/findTx")

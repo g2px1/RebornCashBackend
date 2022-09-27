@@ -8,16 +8,18 @@ public class BlockchainData {
     public String name;
     public String nftContractAddress;
     public String gameContractAddress;
+    public String gameIMMO;
     public String stableCoinAddress;
     public String hotWalletAddress;
     public String privateKey;
     public String platform = "evm";
 
-    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String stableCoinAddress, String privateKey, String platform, String hotWalletAddress) {
+    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String gameIMMO, String stableCoinAddress, String privateKey, String platform, String hotWalletAddress) {
         this.url = url;
         this.name = name;
         this.nftContractAddress = nftContractAddress;
         this.gameContractAddress = gameContractAddress;
+        this.gameIMMO = gameIMMO;
         this.stableCoinAddress = stableCoinAddress;
         this.privateKey = privateKey;
         this.platform = platform;

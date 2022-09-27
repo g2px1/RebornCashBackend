@@ -1,6 +1,7 @@
 package com.client.eurekaclient.services.web3;
 
 import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.response.ResponseHandler;
@@ -45,30 +46,43 @@ public class Web3Service {
     private static final Function<Double, Double> rounder = j -> Math.round(j * 10000.0) / 10000.0;
     private static final Logger logger = LoggerFactory.getLogger(Web3Service.class);
 
-    public ResponseEntity<Object> sendStableCoinTransaction(String recipientAddress, String chainName, double amount, String username) {
-        Optional<UserLock> userLock = fairLock.getFairLock(username);
-        if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
+    public TransactionResult sendStableCoinTransaction(String recipientAddress, String chainName, double amount, String username) {
         Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
-        if (blockchainDataOptional.isEmpty()) {
-            fairLock.unlock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null);
-        }
+        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED);
         BlockchainData blockchainData = blockchainDataOptional.get();
         StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
         amount = Web3Service.rounder.apply(amount);
         BigInteger bigIntegerAmount = BigInteger.valueOf((long) (amount * 10000)).multiply(BigInteger.valueOf(10).pow(14));
         try {
             TransactionReceipt transactionReceipt = standardContractProvider.getERC20Token(blockchainData.stableCoinAddress).transfer(recipientAddress, bigIntegerAmount).send();
-            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)){
-                fairLock.unlock(username);
-                return ResponseHandler.generateResponse(String.format(ErrorMessage.TRANSACTION_ERROR, "transaction exists"), HttpStatus.BAD_REQUEST, false);
-            }
+            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction exists"));
             transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
-            return ResponseHandler.generateResponse(null, HttpStatus.OK, transactionReceipt.toString());
+            return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
             fairLock.unlock(username);
-            return ResponseHandler.generateResponse(String.format(ErrorMessage.TRANSACTION_ERROR, e.getMessage()) , HttpStatus.BAD_REQUEST, null);
+            return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
+        }
+    }
+
+    public TransactionResult sendSecuredStableCoinTransaction(String chainName, double amount, String username) {
+        Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
+        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED);
+        BlockchainData blockchainData = blockchainDataOptional.get();
+        StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
+        amount = Web3Service.rounder.apply(amount);
+        BigInteger bigIntegerAmount = BigInteger.valueOf((long) (amount * 10000)).multiply(BigInteger.valueOf(10).pow(14));
+        try {
+            Optional<ConnectedWallet> connectedWallet = connectedWalletsRepository.findByUsername(username);
+            if (connectedWallet.isEmpty()) return new TransactionResult(null, true, ErrorMessage.METAMASK_ERROR);
+            TransactionReceipt transactionReceipt = standardContractProvider.getERC20Token(blockchainData.stableCoinAddress).transfer(connectedWallet.get().getAddress(), bigIntegerAmount).send();
+            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction exists"));
+            transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
+            return new TransactionResult(transactionReceipt, false, null);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            fairLock.unlock(username);
+            return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
         }
     }
     public ResponseEntity<Object> sendGameTransaction(String recipientAddress, String chainName, double amount, String username, String code) {
@@ -116,6 +130,26 @@ public class Web3Service {
             logger.error(e.getMessage());
             fairLock.unlock(username);
             return ResponseHandler.generateResponse(String.format(ErrorMessage.TRANSACTION_ERROR, e.getMessage()) , HttpStatus.BAD_REQUEST, null);
+        }
+    }
+    public TransactionResult sendSecuredGameTransaction(String chainName, double amount, String username) {
+        Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
+        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED);
+        BlockchainData blockchainData = blockchainDataOptional.get();
+        StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
+        amount = Web3Service.rounder.apply(amount);
+        BigInteger bigIntegerAmount = BigInteger.valueOf((long) (amount * 10000)).multiply(BigInteger.valueOf(10).pow(14));
+        try {
+            Optional<ConnectedWallet> connectedWallet = connectedWalletsRepository.findByUsername(username);
+            if (connectedWallet.isEmpty()) return new TransactionResult(null, true, ErrorMessage.METAMASK_ERROR);
+            TransactionReceipt transactionReceipt = standardContractProvider.getERC20Token(blockchainData.gameContractAddress).transfer(blockchainData.gameIMMO, bigIntegerAmount).send();
+            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction exists"));
+            transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
+            return new TransactionResult(transactionReceipt, false, null);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            fairLock.unlock(username);
+            return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
         }
     }
 
