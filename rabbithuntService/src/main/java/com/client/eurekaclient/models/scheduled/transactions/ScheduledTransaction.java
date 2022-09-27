@@ -5,16 +5,28 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document(collection = "layer1ExpiringTransactions")
+@Document(collection = "scheduledTransactions")
 public class ScheduledTransaction {
     @Id
     public String id;
     public long activeTill = new Date().getTime();
     public String unitHash;
-    public long nftIndex;
+    public String nftUuid;
     public double amount;
     public String tokenName;
     public boolean reverted = false;
+
+    public ScheduledTransaction() {
+    }
+
+    public ScheduledTransaction(long activeTill, String unitHash, String nftUuid, double amount, String tokenName, boolean reverted) {
+        this.activeTill = activeTill;
+        this.unitHash = unitHash;
+        this.nftUuid = nftUuid;
+        this.amount = amount;
+        this.tokenName = tokenName;
+        this.reverted = reverted;
+    }
 
     public String getId() {
         return id;
@@ -40,12 +52,12 @@ public class ScheduledTransaction {
         this.unitHash = unitHash;
     }
 
-    public long getNftIndex() {
-        return nftIndex;
+    public String getNftUuid() {
+        return nftUuid;
     }
 
-    public void setNftIndex(long nftIndex) {
-        this.nftIndex = nftIndex;
+    public void setNftUuid(String nftUuid) {
+        this.nftUuid = nftUuid;
     }
 
     public double getAmount() {

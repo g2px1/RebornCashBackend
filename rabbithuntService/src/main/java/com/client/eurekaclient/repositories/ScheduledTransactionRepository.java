@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScheduledTransactionRepository extends MongoRepository<ScheduledTransaction, String> {
-    Optional<List<ScheduledTransaction>> findByNftNameAndActiveTillLessThanAndReverted(String nftName, long activeTill, boolean reverted);
-    ScheduledTransaction findFirstByNftName(String nftName);
+    Optional<List<ScheduledTransaction>> findByNftIndexAndActiveTillLessThanAndReverted(long index, long activeTill, boolean reverted);
+    ScheduledTransaction findFirstByNftIndex(long index);
 }

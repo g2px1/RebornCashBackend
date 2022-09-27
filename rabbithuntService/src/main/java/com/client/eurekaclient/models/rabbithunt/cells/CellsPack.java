@@ -14,7 +14,7 @@ public class CellsPack {
     public long index;
     @DBRef
     public Trap trap;
-    public String sellerNFTName;
+    public String nftName;
     public BigDecimal price;
     public BigDecimal quantity;
     public String status;
@@ -22,26 +22,26 @@ public class CellsPack {
 
     public CellsPack() {}
 
-    public CellsPack(long index, Trap trap, String sellerNFTName, BigDecimal price) {
+    public CellsPack(long index, Trap trap, String nftName, BigDecimal price) {
         this.index = index;
         this.trap = trap;
-        this.sellerNFTName = sellerNFTName;
+        this.nftName = nftName;
         this.price = price;
     }
 
-    public CellsPack(long index, Trap trap, String sellerNFTName, BigDecimal price, BigDecimal quantity, String status) {
+    public CellsPack(long index, Trap trap, String nftName, BigDecimal price, BigDecimal quantity, String status) {
         this.index = index;
         this.trap = trap;
-        this.sellerNFTName = sellerNFTName;
+        this.nftName = nftName;
         this.price = price;
         this.quantity = quantity;
         this.status = status;
     }
 
-    public CellsPack(long index, Trap trap, String sellerNFTName, BigDecimal price, BigDecimal quantity, String status, String username) {
+    public CellsPack(long index, Trap trap, String nftName, BigDecimal price, BigDecimal quantity, String status, String username) {
         this.index = index;
         this.trap = trap;
-        this.sellerNFTName = sellerNFTName;
+        this.nftName = nftName;
         this.price = price;
         this.quantity = quantity;
         this.status = status;
@@ -72,12 +72,12 @@ public class CellsPack {
         this.trap = trap;
     }
 
-    public String getSellerNFTName() {
-        return sellerNFTName;
+    public String getNftName() {
+        return nftName;
     }
 
-    public void setSellerNFTName(String sellerNFTName) {
-        this.sellerNFTName = sellerNFTName;
+    public void setNftName(String nftName) {
+        this.nftName = nftName;
     }
 
     public BigDecimal getPrice() {

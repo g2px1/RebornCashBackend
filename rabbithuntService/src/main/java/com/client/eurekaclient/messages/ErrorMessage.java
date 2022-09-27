@@ -43,4 +43,8 @@ public abstract class ErrorMessage {
     public static String NOT_ENOUGH_CARROTS;
     @Value("${app.error.message.LOCK}")
     public static String LOCK;
+    @Value("${app.error.message.TRAP_CLOSED}")
+    public static String TRAP_CLOSED;
+    @Value("${app.error.message.TRAP_IS_FULL}")
+    public static String TRAP_IS_FULL;
 }
