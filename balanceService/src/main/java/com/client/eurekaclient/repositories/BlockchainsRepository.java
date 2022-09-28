@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface BlockchainsRepository extends MongoRepository<BlockchainData, String> {
     Page<BlockchainData> findByPlatform(@NotNull String platform, Pageable pageable);
     Optional<BlockchainData> findByName(@NotNull String name);
+    boolean existsByUrlOrName(String url, String name);
     List<BlockchainData> findAll();
 }

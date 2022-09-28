@@ -131,6 +131,14 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- json pattern reading -->
+        <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-jsonpath -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jsonpath</artifactId>
+            <version>3.18.2</version>
+        </dependency>
+        <!-- json pattern reading -->
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -29,4 +29,6 @@ public abstract class ErrorMessage {
     public static String LOCK;
     @Value("${app.error.message.METAMASK_ERROR}")
     public static String METAMASK_ERROR;
+    @Value("${app.error.message.BLOCKCHAIN_ALREADY_ADDED}")
+    public static String BLOCKCHAIN_ALREADY_ADDED;
 }

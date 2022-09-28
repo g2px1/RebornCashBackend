@@ -13,8 +13,11 @@ public class BlockchainData {
     public String hotWalletAddress;
     public String privateKey;
     public String platform = "evm";
+    public String jsonPathToGamePrice;
+    public String gameRequestType;
+    public String gamePriceUrl;
 
-    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String gameIMMO, String stableCoinAddress, String privateKey, String platform, String hotWalletAddress) {
+    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String gameIMMO, String stableCoinAddress, String privateKey, String platform, String hotWalletAddress, String jsonPathToGamePrice, String gamePriceUrl, String gameRequestType) {
         this.url = url;
         this.name = name;
         this.nftContractAddress = nftContractAddress;
@@ -24,6 +27,9 @@ public class BlockchainData {
         this.privateKey = privateKey;
         this.platform = platform;
         this.hotWalletAddress = hotWalletAddress;
+        this.jsonPathToGamePrice = jsonPathToGamePrice;
+        this.gamePriceUrl = gamePriceUrl;
+        this.gameRequestType = gameRequestType;
     }
 
     public String getStableCoinAddress() {

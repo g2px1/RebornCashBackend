@@ -88,7 +88,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.24.4</version>
+            <version>9.25.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
@@ -126,6 +126,15 @@
             <artifactId>utils</artifactId>
             <version>4.9.4</version>
         </dependency>
+
+        <!-- json pattern reading -->
+        <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-jsonpath -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jsonpath</artifactId>
+            <version>3.18.2</version>
+        </dependency>
+        <!-- json pattern reading -->
     </dependencies>
     <dependencyManagement>
         <dependencies>

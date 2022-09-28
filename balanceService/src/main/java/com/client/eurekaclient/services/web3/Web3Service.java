@@ -4,6 +4,7 @@ import com.client.eurekaclient.messages.ErrorMessage;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
+import com.client.eurekaclient.models.response.BlockchainDataResponse;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.web3.BlockchainData;
 import com.client.eurekaclient.models.web3.ConnectedWallet;
@@ -16,6 +17,7 @@ import com.client.eurekaclient.services.lock.FairLock;
 import com.client.eurekaclient.services.openfeign.users.UserInterface;
 import com.client.eurekaclient.services.web3.contracts.StandardContractProvider;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
+import com.jayway.jsonpath.JsonPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -151,6 +155,33 @@ public class Web3Service {
             fairLock.unlock(username);
             return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
         }
+    }
+
+    public ResponseEntity<Object> validateParsing(String pathToJson, String json) {
+        try {
+            String data = JsonPath.read(json, String.format("$.%s", pathToJson));
+            return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, Map.of("parsedData", data));
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.BAD_REQUEST, true);
+        }
+    }
+
+    public ResponseEntity<Object> addBlockchain(BlockchainData blockchainData) {
+        if (blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name.toLowerCase(Locale.ROOT))) return ResponseHandler.generateResponse(ErrorMessage.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
+        blockchainsRepository.save(blockchainData);
+        return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, true);
+    }
+
+    public Optional<BlockchainDataResponse> getBlockchain(String chainName) {
+        Optional<BlockchainData> optionalBlockchainData = blockchainsRepository.findByName(chainName);
+        if (optionalBlockchainData.isEmpty()) return Optional.empty();
+        return Optional.of(BlockchainDataResponse.build(optionalBlockchainData.get()));
+    }
+
+    public ResponseEntity<Object> changeBlockchain(BlockchainData blockchainData) {
+        if (!blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name)) return ResponseHandler.generateResponse(ErrorMessage.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
+        blockchainsRepository.save(blockchainData);
+        return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, true);
     }
 
     public boolean isWalletOwnerOfNftByIndex(String username, long nftIndex, String chainName) {
