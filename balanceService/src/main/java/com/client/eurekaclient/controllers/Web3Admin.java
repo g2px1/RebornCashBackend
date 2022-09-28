@@ -40,9 +40,8 @@ public class Web3Admin {
         return web3Service.validateParsing(obj.get("pathToJson"), obj.get("json"));
     }
 
-    @PostMapping("/getBlockchainData")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Optional<BlockchainDataResponse> getBlockchainData(@RequestBody HashMap<String, String> obj) {
-        return web3Service.getBlockchain(obj.get("chainName"));
+    @PostMapping("/getBlockchainData/{chainName}")
+    public Optional<BlockchainDataResponse> getBlockchainData(@PathVariable String chainName) {
+        return web3Service.getBlockchain(chainName);
     }
 }

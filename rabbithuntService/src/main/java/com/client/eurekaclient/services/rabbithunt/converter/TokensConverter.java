@@ -1,6 +1,7 @@
 package com.client.eurekaclient.services.rabbithunt.converter;
 
 import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.models.DTO.blockchain.data.BlockchainDataResponse;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.nft.NFT;
@@ -12,6 +13,7 @@ import com.client.eurekaclient.models.request.web3.TransactionRequest;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.services.lock.FairLock;
 import com.client.eurekaclient.services.openfeign.NFT.NFTInterface;
+import com.client.eurekaclient.services.openfeign.blockchain.BlockchainInterface;
 import com.client.eurekaclient.services.openfeign.transactions.unit.UnitInterface;
 import com.client.eurekaclient.services.openfeign.users.UserInterface;
 import com.client.eurekaclient.services.openfeign.wallets.BalanceInterface;
@@ -52,6 +54,8 @@ public class TokensConverter {
     @Autowired
     private ScheduledTxService scheduledTxService;
     @Autowired
+    private BlockchainInterface blockchainInterface;
+    @Autowired
     private FairLock fairLock;
     private static final Logger logger = LoggerFactory.getLogger(UserTrapService.class);
 
@@ -81,6 +85,8 @@ public class TokensConverter {
                 return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
             if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
+            Optional<BlockchainDataResponse> optionalBlockchainDataResponse = blockchainInterface.getBlockchainData(convertingTokenRequest.chainName);
+            if (optionalBlockchainDataResponse.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null); // stopped here
             Optional<JSONArray> optionalGameData = BenSwapRequest.getGameData();
             if (optionalGameData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
 
