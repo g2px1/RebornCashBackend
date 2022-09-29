@@ -39,6 +39,10 @@ public class UserService {
         usersRepository.save(requestUser);
         return true;
     }
+    public Boolean saveAll(List<User> requestUser) {
+        usersRepository.saveAll(requestUser);
+        return true;
+    }
     public Boolean registerUser(User requestUser) {
         requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
         if(usersRepository.existsByUsername(requestUser.getUsername()))

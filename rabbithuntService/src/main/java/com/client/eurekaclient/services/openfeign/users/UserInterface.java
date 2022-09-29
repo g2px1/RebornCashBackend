@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.Optional;
 
 @FeignClient(name = "userService")
@@ -15,6 +16,8 @@ public interface UserInterface {
     Optional<User> getUser(@PathVariable String name);
     @PostMapping("/userService/saveUser")
     Boolean saveUser(@RequestBody User requestUser);
+    @PostMapping("/saveAll")
+    Boolean saveAll(@RequestBody List<User> requestUser);
     @PostMapping("/userService/register")
     Boolean registerUser(@RequestBody User requestUser);
     @GetMapping("/userService/isExists/{name}")

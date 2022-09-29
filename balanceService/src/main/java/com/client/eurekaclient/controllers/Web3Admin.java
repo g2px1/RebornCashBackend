@@ -1,7 +1,6 @@
 package com.client.eurekaclient.controllers;
 
 import com.client.eurekaclient.models.response.BlockchainDataResponse;
-import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.web3.BlockchainData;
 import com.client.eurekaclient.repositories.BlockchainsRepository;
 import com.client.eurekaclient.services.web3.Web3Service;

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -25,6 +26,8 @@ public class UserController {
     }
     @PostMapping("/saveUser")
     public Boolean saveUser(@RequestBody User requestUser) { return userService.saveUser(requestUser); }
+    @PostMapping("/saveAll")
+    public Boolean saveAll(@RequestBody List<User> requestUser) { return userService.saveAll(requestUser); }
     @PostMapping("/register")
     public Boolean registerUser(@RequestBody User requestUser) { return userService.registerUser(requestUser); }
     @GetMapping("/isExists/{name}")

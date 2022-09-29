@@ -63,4 +63,10 @@ public abstract class ErrorMessage {
     public static String TOKEN_NOT_EXISTS;
     @Value("${app.error.message.API_NOT_AVAILABLE}")
     public static String API_NOT_AVAILABLE;
+    @Value("${app.error.message.ALL_FIELDS_SHOULD_BE_FILLED_IN}")
+    public static String ALL_FIELDS_SHOULD_BE_FILLED_IN;
+    @Value("${app.error.message.AMOUNT_IS_TOO_LARGE}")
+    public static String AMOUNT_IS_TOO_LARGE;
+    @Value("${app.error.message.PRODUCT_NOT_FOUND}")
+    public static String PRODUCT_NOT_FOUND;
 }

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CellsPackRepository extends MongoRepository<CellsPack, String> {
-    Optional<CellsPack> findByTrapAndSellerNFTName(Trap trap, String sellerName);
+    Optional<CellsPack> findByTrapAndNftName(Trap trap, String sellerName);
     Optional<CellsPack> findByIndex(long index);
-    Optional<CellsPack> findFirstByIndexAndSellerNFTNameAndStatus(long index, String sellerName, String status);
+    Optional<CellsPack> findFirstByIndexAndNftNameAndStatus(long index, String sellerName, String status);
     List<CellsPack> findByTrap(Trap trap);
 }

@@ -53,6 +53,9 @@ public class MarketService {
             return ResponseHandler.generateResponse(ErrorMessage.PRODUCT_NOT_FOUND, HttpStatus.OK, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, optionalAbstractProduct.get());
     }
+    public Optional<AbstractProduct> findAbstractByUUid(ProductSeekingRequest productSeekingRequest) {
+        return productRepository.findByUuidAndStatus(productSeekingRequest.uuid, productSeekingRequest.status);
+    }
     public ResponseEntity<Object> save(AbstractProduct abstractProduct) {
         productRepository.save(abstractProduct);
         return ResponseHandler.generateResponse("success", HttpStatus.OK, null);

@@ -72,82 +72,82 @@ public class UserTrapService {
     }
 
     public ResponseEntity<Object> buyCells(BuyCellsRequest buyCellsRequest, String username) {
-        Optional<UserLock> userLock = fairLock.getFairLock(username);
+        Optional<UserLock> userLock = fairLock.getUserFairLock(username);
         if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
         if (!trapRepository.existsByName(buyCellsRequest.trapName)) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.OK, null);
         }
         Optional<User> optionalUser = userInterface.getUser(username);
         if (optionalUser.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.OK, null);
         }
         User user = optionalUser.get();
         try {
             if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(buyCellsRequest.code), 0)) {
-                fairLock.unlock(username);
+                fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
             }
         } catch (GeneralSecurityException e) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             logger.error(e.getMessage());
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         Trap trap = trapRepository.findByName(buyCellsRequest.trapName);
         if (!trap.status) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_EXPIRED, HttpStatus.OK, null);
         }
         Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
         if (optionalConnectedWallet.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.OK, null);
         }
         Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(buyCellsRequest.nftIndex));
         if (optionalNFT.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.OK, null);
         }
         NFT nft = optionalNFT.get();
         if (!balanceInterface.isOwnerOfNFT(username, buyCellsRequest.nftIndex, buyCellsRequest.chainName)) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.OWNERSHIP_ERROR, HttpStatus.OK, null);
         }
         if (buyCellsRequest.quantity == 0) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(String.format(ErrorMessage.INVALID_DATA, "quantity = 0"), HttpStatus.OK, null);
         }
         Optional<JSONObject> optionalJsonBalance = balanceInterface.getBalance(nft.name);
         if (optionalJsonBalance.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         Optional<Double> optionalInCarrotsBalance = UserTrapService.getValueInDouble(optionalJsonBalance.get(), "carrot");
         if (optionalInCarrotsBalance.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         double inCarrotsBalance = optionalInCarrotsBalance.get();
 
         if (buyCellsRequest.quantity > trap.cellsAvailable) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_OUT_OF_EMISSION, HttpStatus.OK, null);
         }
         Optional<JSONObject> optionalPrice = YahooFinanceRequest.getOptionPrice(trap.optionName);
         if (optionalPrice.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.OK, null);
         }
         Double optionPrice;
         try {
             optionPrice = YahooFinanceRequest.getOptionOptionalRegularMarketPrice(trap.optionName);
         } catch (Exception e) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         if (buyCellsRequest.quantity > inCarrotsBalance * 100) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.NOT_ENOUGH_CARROTS, HttpStatus.OK, null);
         }
         trap.setCellsAvailable(trap.cellsAvailable - buyCellsRequest.quantity);
@@ -161,43 +161,43 @@ public class UserTrapService {
     }
 
     public ResponseEntity<Object> investInBurger(InvestmentInBurgerRequest investmentInBurgerRequest, String username) {
-        Optional<UserLock> userLock = fairLock.getFairLock(username);
+        Optional<UserLock> userLock = fairLock.getUserFairLock(username);
         if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
         if (investmentInBurgerRequest.quantityOfBurgers == 0) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.BURGER_QUANTITY_ERROR, HttpStatus.OK, null);
         }
         Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(investmentInBurgerRequest.index));
         if (optionalNFT.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.OK, null);
         }
         Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
         if (optionalConnectedWallet.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.OK, null);
         }
         if (balanceInterface.isOwnerOfNFT(username, investmentInBurgerRequest.index, investmentInBurgerRequest.chainName)) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.OWNERSHIP_ERROR, HttpStatus.OK, null);
         }
         User user = userInterface.getUser(username).get();
         if (!user.isTwoFA()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
         }
         try {
             if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(investmentInBurgerRequest.code), 0)) {
-                fairLock.unlock(username);
+                fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
             }
         } catch (GeneralSecurityException e) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             logger.error(e.getMessage());
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.BAD_REQUEST, null);
         }
         NFT nft = optionalNFT.get();
@@ -212,17 +212,17 @@ public class UserTrapService {
 
         Optional<JSONObject> optionalJsonBalance = balanceInterface.getBalance(nft.name);
         if (optionalJsonBalance.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         Optional<Double> optionalInCarrotsBalance = UserTrapService.getValueInDouble(optionalJsonBalance.get(), "meat");
         if (optionalInCarrotsBalance.isEmpty()) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         double inMeatBalance = optionalInCarrotsBalance.get();
         if (inMeatBalance < investmentInBurgerRequest.quantityOfBurgers * 10) {
-            fairLock.unlock(username);
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.OK, null);
         }
 

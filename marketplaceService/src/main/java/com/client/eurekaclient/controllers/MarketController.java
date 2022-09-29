@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/marketController")
@@ -18,6 +20,8 @@ public class MarketController {
     public ResponseEntity<Object> getArticlePage(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findPage(productSeekingRequest);}
     @PostMapping("/findByUuid")
     public ResponseEntity<Object> findByUuid(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findByUUid(productSeekingRequest);}
+    @PostMapping("/findAbstractByUuid")
+    public Optional<AbstractProduct> findAbstractByUuidAndStatus(@RequestBody ProductSeekingRequest productSeekingRequest) {return marketService.findAbstractByUUid(productSeekingRequest);}
     @PostMapping("/save")
     public <T extends AbstractProduct> ResponseEntity<Object> save(@RequestBody T abstractProduct) {return marketService.save(abstractProduct);}
 }

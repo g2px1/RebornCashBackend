@@ -1,7 +1,6 @@
 package com.client.eurekaclient.services.rabbithunt.converter;
 
 import com.client.eurekaclient.messages.ErrorMessage;
-import com.client.eurekaclient.models.DTO.blockchain.data.BlockchainDataResponse;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.nft.NFT;
@@ -76,17 +75,15 @@ public class TokensConverter {
             if (!user.isTwoFA()) return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
             try {
                 if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(convertingTokenRequest.code), 0)) {
-                    fairLock.unlock(username);
+                    fairLock.unlockUserLock(username);
                     return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
                 }
             } catch (GeneralSecurityException e) {
-                fairLock.unlock(username);
+                fairLock.unlockUserLock(username);
                 logger.error(e.getMessage());
                 return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
             if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
-            Optional<BlockchainDataResponse> optionalBlockchainDataResponse = blockchainInterface.getBlockchainData(convertingTokenRequest.chainName);
-            if (optionalBlockchainDataResponse.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.OK, null); // stopped here
             Optional<JSONArray> optionalGameData = BenSwapRequest.getGameData();
             if (optionalGameData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
 

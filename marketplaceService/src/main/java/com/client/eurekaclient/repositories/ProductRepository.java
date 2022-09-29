@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface ProductRepository extends MongoRepository<AbstractProduct, String> {
     Optional<AbstractProduct> findByUuid(String uuid);
+    Optional<AbstractProduct> findByUuidAndStatus(String uuid, boolean status);
     boolean existsByUuid(String uuid);
     Page<AbstractProduct> findByStatus(boolean status, Pageable pageable);
     Page<AbstractProduct> findByTypeAndStatus(String type, boolean status, Pageable pageable);
