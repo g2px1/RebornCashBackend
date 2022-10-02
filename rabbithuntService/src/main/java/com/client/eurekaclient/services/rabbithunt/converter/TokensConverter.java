@@ -7,10 +7,13 @@ import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.nft.NFT;
 import com.client.eurekaclient.models.request.NFT.NFTSeekingRequest;
 import com.client.eurekaclient.models.request.rabbithunt.token.ConvertingTokenRequest;
+import com.client.eurekaclient.models.request.rabbithunt.token.InvestmentInBurgerRequest;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.models.request.web3.ConnectedWallet;
 import com.client.eurekaclient.models.request.web3.TransactionRequest;
 import com.client.eurekaclient.models.response.ResponseHandler;
+import com.client.eurekaclient.models.scheduled.transactions.ScheduledTransaction;
+import com.client.eurekaclient.repositories.ScheduledTransactionRepository;
 import com.client.eurekaclient.services.lock.FairLock;
 import com.client.eurekaclient.services.openfeign.NFT.NFTInterface;
 import com.client.eurekaclient.services.openfeign.blockchain.BlockchainInterface;
@@ -33,10 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -51,6 +51,8 @@ public class TokensConverter {
     private ConnectedWalletInterface connectedWalletInterface;
     @Autowired
     private BalanceInterface balanceInterface;
+    @Autowired
+    private ScheduledTransactionRepository scheduledTransactionRepository;
     @Autowired
     private ScheduledTxService scheduledTxService;
     @Autowired
@@ -138,6 +140,81 @@ public class TokensConverter {
             return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("unitResponse", unitResponse.toMap(), "mainChainResponse", transactionResult.transactionReceipt.toString())));
         }
         return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+    }
+
+    public ResponseEntity<Object> investInBurger(InvestmentInBurgerRequest investmentInBurgerRequest, String username) {
+        Optional<UserLock> userLock = fairLock.getUserFairLock(username);
+        if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
+        if (investmentInBurgerRequest.quantityOfBurgers == 0) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.BURGER_QUANTITY_ERROR, HttpStatus.OK, null);
+        }
+        Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(investmentInBurgerRequest.index));
+        if (optionalNFT.isEmpty()) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.OK, null);
+        }
+        Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
+        if (optionalConnectedWallet.isEmpty()) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.OK, null);
+        }
+        if (balanceInterface.isOwnerOfNFT(username, investmentInBurgerRequest.index, investmentInBurgerRequest.chainName)) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.OWNERSHIP_ERROR, HttpStatus.OK, null);
+        }
+        User user = userInterface.getUser(username).get();
+        if (!user.isTwoFA()) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
+        }
+        try {
+            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(investmentInBurgerRequest.code), 0)) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
+            }
+        } catch (GeneralSecurityException e) {
+            fairLock.unlockUserLock(username);
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+        }
+        if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.BAD_REQUEST, null);
+        }
+        NFT nft = optionalNFT.get();
+        Optional<List<ScheduledTransaction>> optionalScheduledTransactionList = scheduledTransactionRepository.findByNftNameAndActiveTillLessThanAndReverted(nft.name, new Date().getTime(), false);
+        optionalScheduledTransactionList.ifPresent(layer1ExpiringTransactionsList -> { // check if list !empty
+            layer1ExpiringTransactionsList.forEach(scheduledTransaction -> { // looking for all Transactions and their amounts
+                unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, scheduledTransaction.amount, "meat"));
+                scheduledTransaction.setReverted(true); // setting status of transaction
+            });
+            scheduledTransactionRepository.saveAll(optionalScheduledTransactionList.get()); // saving changes if exists
+        });
+
+        Optional<JSONObject> optionalJsonBalance = balanceInterface.getBalance(nft.name);
+        if (optionalJsonBalance.isEmpty()) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+        }
+        Optional<Double> optionalInCarrotsBalance = UserTrapService.getValueInDouble(optionalJsonBalance.get(), "meat");
+        if (optionalInCarrotsBalance.isEmpty()) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+        }
+        double inMeatBalance = optionalInCarrotsBalance.get();
+        if (inMeatBalance < investmentInBurgerRequest.quantityOfBurgers * 10) {
+            fairLock.unlockUserLock(username);
+            return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.OK, null);
+        }
+
+        JSONObject outMeat = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "meat"));
+        JSONObject inBurger = unitInterface.sendTokens(new TransferTokensRequests(nft.name, "merchant", investmentInBurgerRequest.quantityOfBurgers, "burger"));
+        user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
+        userInterface.saveUser(user);
+        scheduledTxService.subtractTxByNft(nft.name, investmentInBurgerRequest.quantityOfBurgers * 10);
+        fairLock.unlockUserLock(username);
+        return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("meatTransactionHash", outMeat.toMap(), "burgerTransactionHash", inBurger.toMap())));
     }
 
     private static Optional<Double> getValueInDouble(JSONObject balance, String tokenName) {

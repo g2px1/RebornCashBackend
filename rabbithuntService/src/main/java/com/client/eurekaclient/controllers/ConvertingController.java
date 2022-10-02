@@ -1,6 +1,7 @@
 package com.client.eurekaclient.controllers;
 
 import com.client.eurekaclient.models.request.rabbithunt.token.ConvertingTokenRequest;
+import com.client.eurekaclient.models.request.rabbithunt.token.InvestmentInBurgerRequest;
 import com.client.eurekaclient.services.rabbithunt.converter.TokensConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +20,11 @@ public class ConvertingController {
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> convertLayer1TokensIntoGame(@RequestBody ConvertingTokenRequest convertingTokenRequest, Authentication authentication) {
         return tokensConverter.convertLayer1TokensIntoGame(convertingTokenRequest, authentication.getName());
+    }
+
+    @PostMapping("/investInBurger")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> investInBurger(@RequestBody InvestmentInBurgerRequest investmentInBurgerRequest, Authentication authentication) {
+        return tokensConverter.investInBurger(investmentInBurgerRequest, authentication.getName());
     }
 }

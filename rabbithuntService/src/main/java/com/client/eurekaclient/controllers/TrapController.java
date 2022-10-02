@@ -29,10 +29,4 @@ public class TrapController {
     public ResponseEntity<Object> buyTrapCells(@RequestBody BuyCellsRequest buyCellsRequest, Authentication authentication) {
         return userTrapService.buyCells(buyCellsRequest, authentication.getName());
     }
-
-    @PostMapping("/investInBurger")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<Object> investInBurger(@RequestBody InvestmentInBurgerRequest investmentInBurgerRequest, Authentication authentication) {
-        return userTrapService.investInBurger(investmentInBurgerRequest, authentication.getName());
-    }
 }
