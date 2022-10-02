@@ -1,16 +1,23 @@
 package com.client.eurekaclient.controllers;
 
+import com.client.eurekaclient.models.request.rabbithunt.token.ConvertingTokenRequest;
 import com.client.eurekaclient.services.rabbithunt.converter.TokensConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/rabbitHuntService")
+@RequestMapping("/rabbitHuntService/converting/")
 public class ConvertingController {
     @Autowired
     private TokensConverter tokensConverter;
 
+    @PostMapping("/convertLayer1")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> convertLayer1TokensIntoGame(@RequestBody ConvertingTokenRequest convertingTokenRequest, Authentication authentication) {
+        return tokensConverter.convertLayer1TokensIntoGame(convertingTokenRequest, authentication.getName());
+    }
 }

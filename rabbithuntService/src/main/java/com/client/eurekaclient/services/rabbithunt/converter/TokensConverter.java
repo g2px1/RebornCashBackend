@@ -3,6 +3,7 @@ package com.client.eurekaclient.services.rabbithunt.converter;
 import com.client.eurekaclient.messages.ErrorMessage;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
+import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.nft.NFT;
 import com.client.eurekaclient.models.request.NFT.NFTSeekingRequest;
 import com.client.eurekaclient.models.request.rabbithunt.token.ConvertingTokenRequest;
@@ -60,19 +61,42 @@ public class TokensConverter {
 
     public ResponseEntity<Object> convertLayer1TokensIntoGame(ConvertingTokenRequest convertingTokenRequest, String username) {
         if (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot") || convertingTokenRequest.tokenName.equalsIgnoreCase("meat")) {
+            Optional<UserLock> userLock = fairLock.getUserFairLock(username);
+            if(userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
             Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(convertingTokenRequest.nftIndex));
-            if (optionalNFT.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
+            if (optionalNFT.isEmpty()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
+            }
             Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
-            if (optionalConnectedWallet.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
+            if (optionalConnectedWallet.isEmpty()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
+            }
             NFT nft = optionalNFT.get();
-            if (balanceInterface.isOwnerOfNFT(username, nft.index, convertingTokenRequest.chainName)) return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            if (balanceInterface.isOwnerOfNFT(username, nft.index, convertingTokenRequest.chainName)) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            }
             Optional<JSONObject> optionalBalance = balanceInterface.getBalance(nft.name);
-            if (optionalBalance.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+            if (optionalBalance.isEmpty()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+            }
             Optional<Double> balance = getValueInDouble(optionalBalance.get(), nft.name);
-            if (balance.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
-            if (balance.get() < convertingTokenRequest.tokenAmount) return ResponseHandler.generateResponse(ErrorMessage.LOW_TOKEN_BALANCE, HttpStatus.BAD_REQUEST, null);
+            if (balance.isEmpty()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+            }
+            if (balance.get() < convertingTokenRequest.tokenAmount) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.LOW_TOKEN_BALANCE, HttpStatus.BAD_REQUEST, null);
+            }
             User user = userInterface.getUser(username).get();
-            if (!user.isTwoFA()) return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
+            if (!user.isTwoFA()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
+            }
             try {
                 if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(convertingTokenRequest.code), 0)) {
                     fairLock.unlockUserLock(username);
@@ -83,16 +107,25 @@ public class TokensConverter {
                 logger.error(e.getMessage());
                 return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
-            if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
+            if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
+            }
             Optional<JSONArray> optionalGameData = BenSwapRequest.getGameData();
-            if (optionalGameData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
+            if (optionalGameData.isEmpty()) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
+            }
 
             double usdAmount = (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
 
             JSONObject unitResponse = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, convertingTokenRequest.tokenAmount, convertingTokenRequest.tokenName));
 
             TransactionResult transactionResult = balanceInterface.sendStableCoins(new TransactionRequest(convertingTokenRequest.chainName, username, usdAmount));
-            if (transactionResult.error) return ResponseHandler.generateResponse(transactionResult.errorMessage, HttpStatus.OK, null);
+            if (transactionResult.error) {
+                fairLock.unlockUserLock(username);
+                return ResponseHandler.generateResponse(transactionResult.errorMessage, HttpStatus.OK, null);
+            }
             user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
             userInterface.saveUser(user);
 
@@ -101,12 +134,13 @@ public class TokensConverter {
             if (convertingTokenRequest.tokenName.equalsIgnoreCase("meat"))
                 scheduledTxService.subtractTxByNft(nft.name, convertingTokenRequest.tokenAmount);
 
+            fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("unitResponse", unitResponse.toMap(), "mainChainResponse", transactionResult.transactionReceipt.toString())));
         }
         return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
     }
 
-    public static Optional<Double> getValueInDouble(JSONObject balance, String tokenName) {
+    private static Optional<Double> getValueInDouble(JSONObject balance, String tokenName) {
         AtomicReference<JSONObject> balanceOptional = new AtomicReference<>();
         balance.getJSONObject("balance").getJSONArray("tokens_balance").forEach(tokens -> {
             JSONObject jsonObject = new JSONObject(tokens.toString());

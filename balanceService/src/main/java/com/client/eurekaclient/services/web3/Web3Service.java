@@ -64,7 +64,6 @@ public class Web3Service {
             return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            fairLock.unlock(username);
             return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
         }
     }
@@ -85,7 +84,6 @@ public class Web3Service {
             return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            fairLock.unlock(username);
             return new TransactionResult(null, false, ErrorMessage.TRANSACTION_ERROR);
         }
     }
@@ -199,5 +197,3 @@ public class Web3Service {
         }
     }
 }
-
-//    !W3.getERC721Contract().ownerOf(BigInteger.valueOf(nft.index)).send().equalsIgnoreCase(walletsSignedRepository.findByUsername(authentication.getName()).getAddress())

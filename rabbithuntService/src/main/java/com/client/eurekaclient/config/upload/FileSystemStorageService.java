@@ -1,8 +1,8 @@
 package com.client.eurekaclient.config.upload;
 
-import com.client.eurekaclient.utilities.Upload.StorageService;
-import com.client.eurekaclient.utilities.Upload.exception.StorageException;
-import com.client.eurekaclient.utilities.Upload.exception.StorageFileNotFoundException;
+import com.client.eurekaclient.utilities.upload.StorageService;
+import com.client.eurekaclient.utilities.upload.exception.StorageException;
+import com.client.eurekaclient.utilities.upload.exception.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

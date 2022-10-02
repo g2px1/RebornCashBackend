@@ -35,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
@@ -42,6 +43,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Service
 public class UserTrapService {
     @Autowired
     private TrapRepository trapRepository;
@@ -66,6 +68,7 @@ public class UserTrapService {
     private static final Logger logger = LoggerFactory.getLogger(UserTrapService.class);
 
     public ResponseEntity<Object> loadTraps(HashMap<String, Integer> pageNumber) {
+        if (!pageNumber.containsKey("page")) return ResponseHandler.generateResponse(ErrorMessage.INVALID_DATA, HttpStatus.OK, null);
         Pageable paging = PageRequest.of(pageNumber.get("pageNumber"), 5);
         Page<Trap> page = trapRepository.findAllByStatus("active", paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(TrapResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
@@ -157,6 +160,7 @@ public class UserTrapService {
         JSONObject outJSON = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, buyCellsRequest.quantity * 100, "carrot"));
         JSONObject inJSON = unitInterface.sendTokens(new TransferTokensRequests(nft.name, "merchant", buyCellsRequest.quantity * 100, trap.name.toLowerCase(Locale.ROOT)));
         cellsTransactionRepository.save(new CellsTransactions(trap, nft.name, buyCellsRequest.quantity, outJSON.getString("hash"), inJSON.getString("hash")));
+        fairLock.unlockUserLock(username);
         return ResponseHandler.generateResponse("Ok", HttpStatus.OK, Map.of("outTx", outJSON.get("hash"), "inTx", inJSON.get("hash")));
     }
 
@@ -231,6 +235,7 @@ public class UserTrapService {
         user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
         userInterface.saveUser(user);
         scheduledTxService.subtractTxByNft(nft.name, investmentInBurgerRequest.quantityOfBurgers * 10);
+        fairLock.unlockUserLock(username);
         return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("meatTransactionHash", outMeat.toMap(), "burgerTransactionHash", inBurger.toMap())));
     }
 

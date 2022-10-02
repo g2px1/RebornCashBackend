@@ -22,7 +22,7 @@ public class NFTService {
 
     public Optional<NFT> findByIndex(long index) { return NFTRepository.findByIndex(index); }
     public ResponseEntity<Object> existsByIndex(long index) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.existsByIndex(index));}
-    public ResponseEntity<Object> findByName(String name) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByName(name));}
+    public Optional<NFT> findByName(String name) { return  NFTRepository.findByName(name); }
     public ResponseEntity<Object> findByUuid(String uuid) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByUuid(uuid));}
     public ResponseEntity<Object> save(NFT nft) {
         NFTRepository.save(nft);

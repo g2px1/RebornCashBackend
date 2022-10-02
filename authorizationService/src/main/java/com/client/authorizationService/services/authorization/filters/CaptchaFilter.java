@@ -21,7 +21,7 @@ public class CaptchaFilter implements Filter {
         CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest((HttpServletRequest) servletRequest);
         Object str = mapper.readValue(cachedBodyHttpServletRequest.getInputStream(), Object.class);
         JSONObject jsonObject = new JSONObject(str);
-        if (!captchaUtility.isCaptchaValid(jsonObject.getString("captchaToken"), cachedBodyHttpServletRequest))
+        if (!jsonObject.has("captchaToken") || !captchaUtility.isCaptchaValid(jsonObject.getString("captchaToken"), cachedBodyHttpServletRequest))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.BOT);
         filterChain.doFilter(cachedBodyHttpServletRequest, servletResponse);
     }

@@ -13,7 +13,7 @@ import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.scheduled.transactions.ScheduledTransaction;
 import com.client.eurekaclient.repositories.*;
 import com.client.eurekaclient.services.openfeign.transactions.unit.UnitInterface;
-import com.client.eurekaclient.utilities.Upload.StorageService;
+import com.client.eurekaclient.utilities.upload.StorageService;
 import com.client.eurekaclient.utilities.http.finance.YahooFinanceRequest;
 import com.client.eurekaclient.utilities.http.PostRequest;
 import org.json.JSONObject;
@@ -69,11 +69,16 @@ public class SecuredTrapService {
         return tokenStructure.chars().mapToObj(Integer::toHexString).collect(Collectors.joining());
     }
 
-    public ResponseEntity<Object> createTrap(TrapRequest trapRequest) throws IllegalAccessException {
+    public ResponseEntity<Object> createTrap(TrapRequest trapRequest) {
         if (!tokensRepository.existsByName(trapRequest.tokenName.trim()))
             return ResponseHandler.generateResponse("Token doesn't exist in UNIT.", HttpStatus.BAD_REQUEST, null);
-        if (trapRequest.checkNull())
-            return ResponseHandler.generateResponse("All fields should be filled in.", HttpStatus.BAD_REQUEST, null);
+        try {
+            if (trapRequest.checkNull())
+                return ResponseHandler.generateResponse(ErrorMessage.ALL_FIELDS_SHOULD_BE_FILLED_IN, HttpStatus.BAD_REQUEST, null);
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+        }
         if (trapRepository.existsByName(StringUtils.capitalize(trapRequest.name.toLowerCase(Locale.ROOT)).trim()))
             return ResponseHandler.generateResponse("Trap exists.", HttpStatus.BAD_REQUEST, null);
         if (!YahooFinanceRequest.optionExists(trapRequest.optionName.toUpperCase(Locale.ROOT).trim()))

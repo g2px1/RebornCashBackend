@@ -1,4 +1,4 @@
-package com.client.eurekaclient.utilities.Upload.exception;
+package com.client.eurekaclient.utilities.upload.exception;
 
 public class StorageFileNotFoundException extends StorageException {
     public StorageFileNotFoundException(String message) {

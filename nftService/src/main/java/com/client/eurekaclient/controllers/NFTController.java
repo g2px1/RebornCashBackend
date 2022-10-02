@@ -26,7 +26,7 @@ public class NFTController {
         return nftService.findByUuid(nftSeekingRequest.uuid);
     }
     @PostMapping("/findNftByName")
-    public ResponseEntity<Object> findNftByName(@RequestBody NFTSeekingRequest nftSeekingRequest) {
+    public Optional<NFT> findNftByName(@RequestBody NFTSeekingRequest nftSeekingRequest) {
         return nftService.findByName(nftSeekingRequest.nftName);
     }
     @PostMapping("/existsByIndex")

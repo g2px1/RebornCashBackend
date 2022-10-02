@@ -8,6 +8,10 @@ public class NFTSeekingRequest {
     public NFTSeekingRequest() {
     }
 
+    public NFTSeekingRequest(String nftName) {
+        this.nftName = nftName;
+    }
+
     public NFTSeekingRequest(long index) {
         this.index = index;
     }

@@ -9,6 +9,8 @@ import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.repositories.TokensRepository;
 import com.client.eurekaclient.services.openfeign.transactions.unit.UnitInterface;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,16 +34,18 @@ public class SecuredTxService {
     private TokensRepository tokensRepository;
     @Autowired
     private UnitInterface unitInterface;
+    private Logger logger = LoggerFactory.getLogger(SecuredTxService.class);
 
-    public ResponseEntity<Object> createToken(@RequestBody CreateTokenRequest createTokenRequest) throws IllegalAccessException {
-        if(createTokenRequest.checkNull())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "All fields should be filled in.");
+    public ResponseEntity<Object> createToken(@RequestBody CreateTokenRequest createTokenRequest) {
+        try {
+            if(createTokenRequest.checkNull()) return ResponseHandler.generateResponse(ErrorMessage.ALL_FIELDS_SHOULD_BE_FILLED_IN, HttpStatus.OK, null);
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+        }
 
-        if(createTokenRequest.type > 1 || createTokenRequest.type < 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid type value.");
-
-        if(tokensRepository.existsByName(createTokenRequest.name.toLowerCase(Locale.ROOT)))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token exist.");
+        if(createTokenRequest.type > 1 || createTokenRequest.type < 0) return ResponseHandler.generateResponse(ErrorMessage.INVALID_DATA, HttpStatus.OK, null);
+        if(tokensRepository.existsByName(createTokenRequest.name.toLowerCase(Locale.ROOT))) return ResponseHandler.generateResponse(ErrorMessage.INVALID_DATA, HttpStatus.OK, null);
 
         tokensRepository.save(new Token(createTokenRequest.name.toLowerCase(Locale.ROOT), createTokenRequest.supply, createTokenRequest.type, "token"));
         JSONObject response = unitInterface.createToken(convertToHex(String

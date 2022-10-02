@@ -69,4 +69,6 @@ public abstract class ErrorMessage {
     public static String AMOUNT_IS_TOO_LARGE;
     @Value("${app.error.message.PRODUCT_NOT_FOUND}")
     public static String PRODUCT_NOT_FOUND;
+    @Value("${app.error.message.CELLSPACK_NOT_FOUND}")
+    public static String CELLSPACK_NOT_FOUND;
 }
