@@ -58,9 +58,6 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 if (user.isTwoFA() && verifyInterface.isExistVerify(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.NEED_TO_PASS_2FA);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
-                        .atZone(ZoneId.systemDefault()).toInstant());
-                response.setHeader("AccessToken", jws.generateJWSWithTime(username, exp));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

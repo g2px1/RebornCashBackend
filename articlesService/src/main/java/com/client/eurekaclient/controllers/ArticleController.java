@@ -22,6 +22,7 @@ public class ArticleController {
     }
     @PostMapping("/findByUuid")
     public ResponseEntity<Object> findByUuid(@RequestBody ArticleSeekingRequest articleSeekingRequest) {
+        System.out.println(articleSeekingRequest.uuid);
         return articleService.findByUuid(articleSeekingRequest.uuid);
     }
     @PostMapping("/save")

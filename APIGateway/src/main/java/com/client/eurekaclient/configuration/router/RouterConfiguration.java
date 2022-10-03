@@ -68,7 +68,7 @@ public class RouterConfiguration {
     public RouteLocator articleRouter(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/articles/page/")
+                        .path("/api/articles/page")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
@@ -80,19 +80,19 @@ public class RouterConfiguration {
                                 }))
                         .uri("lb://articleService/"))
                 .route(p -> p
-                        .path("/api/articles/findByUuid/")
+                        .path("/api/articles/findByUuid")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/articles/findByUuid/", "/articleService/findByUuid");
+                                    String newPath = path.replaceAll("/api/articles/findByUuid", "/articleService/findByUuid");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://articleService/"))
                 .route(p -> p
-                        .path("/api/articles/save/")
+                        .path("/api/articles/save")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
@@ -104,7 +104,7 @@ public class RouterConfiguration {
                                 }))
                         .uri("lb://articleService/"))
                 .route(p -> p
-                        .path("/api/articles/update/")
+                        .path("/api/articles/update")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
@@ -121,48 +121,48 @@ public class RouterConfiguration {
     public RouteLocator nftRouter(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/nft/page/")
+                        .path("/api/nft/page")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/nft/page/", "/nftService/page");
+                                    String newPath = path.replaceAll("/api/nft/page", "/nftService/page");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://nftService/"))
                 .route(p -> p
-                        .path("/api/nft/findByUuid/")
+                        .path("/api/nft/findByUuid")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/nft/findByUuid/", "/nftService/findByUuid");
+                                    String newPath = path.replaceAll("/api/nft/findByUuid", "/nftService/findByUuid");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://nftService/"))
                 .route(p -> p
-                        .path("/api/nft/findNftByName/")
+                        .path("/api/nft/findNftByName")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/nft/save/", "/nftService/findNftByName");
+                                    String newPath = path.replaceAll("/api/nft/findNftByName", "/nftService/findNftByName");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://nftService/"))
                 .route(p -> p
-                        .path("/api/nft/findByIndex/")
+                        .path("/api/nft/findByIndex")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/nft/findByIndex/", "/nftService/findByIndex");
+                                    String newPath = path.replaceAll("/api/nft/findByIndex", "/nftService/findByIndex");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -174,24 +174,24 @@ public class RouterConfiguration {
     public RouteLocator marketRouter(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/market/page/")
+                        .path("/api/market/page")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/articles/page/", "/marketController/page");
+                                    String newPath = path.replaceAll("/api/market/page", "/marketController/page");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://marketplaceService/"))
                 .route(p -> p
-                        .path("/api/market/findByUuid/")
+                        .path("/api/market/findByUuid")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/market/findByUuid/", "/marketController/findByUuid");
+                                    String newPath = path.replaceAll("/api/market/findByUuid", "/marketController/findByUuid");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -208,7 +208,7 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/user/balance/(?<username>.*)", "/userService/balance/${username}");
+                                    String newPath = path.replaceAll("/api/user/balance/(?<username>.*)", "/userService/balance/getBalance/${username}");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -254,12 +254,12 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/unit/balance/(?<address>.*)", "/unitBalanceService/getBalance/${address}");
+                                    String newPath = path.replaceAll("/api/unit/balance/(?<address>.*)", "/unitService/getBalance/${address}");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://balanceService/"))
+                        .uri("lb://unitService/"))
                 .build();
     }
     @Bean

@@ -3,7 +3,7 @@ package com.client.eurekaclient.models.request;
 public class ProductSeekingRequest {
     public String uuid;
     public boolean status;
-    public int page;
+    public int pageNumber;
     public boolean direction; // true - asc, false - desc
     public String type;
     public String tokenName;
@@ -25,12 +25,12 @@ public class ProductSeekingRequest {
         this.status = status;
     }
 
-    public int getPage() {
-        return page;
+    public int getPageNumber() {
+        return pageNumber;
     }
 
-    public void setPage(int page) {
-        this.page = page;
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
 
     public boolean isDirection() {

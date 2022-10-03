@@ -30,16 +30,5 @@ public class NFTInactivateScheduler {
         };
         Executor firstHalfExecutor = (runnable) -> new Thread(runnable).start();
         firstHalfExecutor.execute(firstHalf);
-
-//        nftRepository.findAll().stream().parallel().forEach(nft -> {
-//            Optional<List<Layer1ExpiringTransaction>> optionalLayer1ExpiringTransactionList = layer1ExpiringTransactionsRepository.findByNftNameAndActiveTillLessThanAndReverted(nft.name, new Date().getTime(), false);
-//            optionalLayer1ExpiringTransactionList.ifPresent(layer1ExpiringTransactionsList -> { // check if list !empty
-//                layer1ExpiringTransactionsList.forEach(layer1ExpiringTransaction -> { // looking for all Transactions and their amounts
-//                    PostRequest.sendToMerchantTokens(nft.name, layer1ExpiringTransaction.amount, "meat"); // sending tokens
-//                    layer1ExpiringTransaction.setReverted(true); // setting status of transaction
-//                });
-//                layer1ExpiringTransactionsRepository.saveAll(optionalLayer1ExpiringTransactionList.get()); // saving changes if exists
-//            });
-//        });
     }
 }

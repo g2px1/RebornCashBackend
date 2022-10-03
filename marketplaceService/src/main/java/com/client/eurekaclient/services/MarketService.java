@@ -2,8 +2,6 @@ package com.client.eurekaclient.services;
 
 import com.client.eurekaclient.messages.ErrorMessage;
 import com.client.eurekaclient.models.market.AbstractProduct;
-import com.client.eurekaclient.models.market.rabbithunt.CellsPack;
-import com.client.eurekaclient.models.market.rabbithunt.Token;
 import com.client.eurekaclient.models.request.ProductSeekingRequest;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.repositories.ProductRepository;
@@ -26,16 +24,16 @@ public class MarketService {
 
     public ResponseEntity<Object> findPage(ProductSeekingRequest productSeekingRequest) {
         Sort.Direction direction = (productSeekingRequest.direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(productSeekingRequest.page, 10, Sort.by(direction, "price"));
+        Pageable pageable = PageRequest.of(productSeekingRequest.pageNumber, 10, Sort.by(direction, "price"));
         if (productSeekingRequest.type != null) {
             if (productSeekingRequest.trapName != null) {
                 System.out.println(productSeekingRequest.trapName);
-                pageable = PageRequest.of(productSeekingRequest.page, 10, direction, productSeekingRequest.trapName);
+                pageable = PageRequest.of(productSeekingRequest.pageNumber, 10, direction, productSeekingRequest.trapName);
                 Page<AbstractProduct> page = productRepository.findByTypeAndStatus(productSeekingRequest.type, true, pageable);
                 return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent(), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
             }
             if (productSeekingRequest.tokenName != null) {
-                pageable = PageRequest.of(productSeekingRequest.page, 10, direction, productSeekingRequest.tokenName);
+                pageable = PageRequest.of(productSeekingRequest.pageNumber, 10, direction, productSeekingRequest.tokenName);
                 Page<AbstractProduct> page = productRepository.findByTypeAndStatus(productSeekingRequest.type, true, pageable);
                 return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent(), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
             }

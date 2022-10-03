@@ -56,24 +56,24 @@ public class RouterConfiguration {
     public RouteLocator articleRouter(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/articles/save/")
+                        .path("/api/articles/save")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/articles/save/", "/articleService/save");
+                                    String newPath = path.replaceAll("/api/articles/save", "/articleService/save");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://articleService/"))
                 .route(p -> p
-                        .path("/api/articles/update/")
+                        .path("/api/articles/update")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/articles/update/", "/articleService/update");
+                                    String newPath = path.replaceAll("/api/articles/update", "/articleService/update");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
