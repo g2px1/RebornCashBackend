@@ -16,7 +16,6 @@ public class KeyController {
 
     @GetMapping("/getKey")
     public Map<String, Object> getKey() {
-        System.out.println(authorizationService.getECKeyData());
         return authorizationService.getECKeyData();
     }
 }

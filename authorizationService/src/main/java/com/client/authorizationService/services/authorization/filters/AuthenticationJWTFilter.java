@@ -35,8 +35,6 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImplementation userDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationJWTFilter.class);
-    @Autowired
-    private JWS jws;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,9 +50,6 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_BANNED);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
-                        .atZone(ZoneId.systemDefault()).toInstant());
-                response.setHeader("Authorization", String.format("Bearer %s", jws.generateJWSWithTime(username, exp)));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

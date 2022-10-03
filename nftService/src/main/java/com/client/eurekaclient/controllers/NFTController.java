@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -19,7 +20,7 @@ public class NFTController {
 
     @PostMapping("/page")
     public ResponseEntity<Object> getNFTPage(@RequestBody NFTPageRequest nftPageRequest) {
-        return nftService.findAll(nftPageRequest.pageNumber, nftPageRequest.chain);
+        return nftService.findAllByPages(nftPageRequest.pageNumber, nftPageRequest.chain);
     }
     @PostMapping("/findNftByUuid")
     public ResponseEntity<Object> findNftByUuid(@RequestBody NFTSeekingRequest nftSeekingRequest) {
@@ -35,8 +36,11 @@ public class NFTController {
     }
     @PostMapping("/findByIndex")
     public Optional<NFT> findByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
-        System.out.println(nftSeekingRequest.index);
         return nftService.findByIndex(nftSeekingRequest.index);
+    }
+    @PostMapping("/findAll")
+    public List<NFT> findAll() {
+        return nftService.findAll();
     }
     @PostMapping("/save")
     public ResponseEntity<Object> findByIndex(@RequestBody NFT nft) {

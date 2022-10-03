@@ -14,6 +14,8 @@ import com.client.authorizationService.services.openfeign.verify.VerifyInterface
 import com.client.authorizationService.utilities.JWT.JWTUtility;
 import com.client.authorizationService.utilities.random.Rnd;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,9 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.util.*;
 
 @Service
@@ -50,6 +52,7 @@ public class AuthorizationService {
     private volatile JWS jws;
     @Autowired
     private JWTUtility jwtUtility;
+    private final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
 
     public ResponseEntity<Object> authorizeUser(AuthorizationDTO authorizationDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authorizationDTO.username, authorizationDTO.password));
@@ -87,6 +90,19 @@ public class AuthorizationService {
         if (!userInterface.changePasswordIfExists(authorizationDTO.username, encoder.encode(authorizationDTO.password), authorizationDTO.code))
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, true);
+    }
+
+    public ResponseEntity<Object> approveVerifyCode(String username, String code) {
+        Optional<User> user = userInterface.getUser(username);
+        if (user.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        try {
+            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.get().getSecretKey(), Integer.parseInt(code), 0)) return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.BAD_REQUEST, null);
+        } catch (GeneralSecurityException e) {
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+        }
+        verifyInterface.deleteVerify(new VerifyDTO(username, true));
+        return ResponseHandler.generateResponse(null, HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> validateJWT(String authorizationHeader) {

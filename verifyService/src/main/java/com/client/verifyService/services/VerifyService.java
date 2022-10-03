@@ -11,7 +11,10 @@ public class VerifyService {
     @Autowired
     private VerifyRepository verifyRepository;
 
-    public void setVerify(VerifyDTO verifyDTO) { verifyRepository.save(new Verify2FA(verifyDTO.username, verifyDTO.authorized)); }
+    public void setVerify(VerifyDTO verifyDTO) {
+        verifyRepository.deleteAllByUsername(verifyDTO.username);
+        verifyRepository.save(new Verify2FA(verifyDTO.username, verifyDTO.authorized));
+    }
     public void deleteVerify(VerifyDTO verifyDTO) { verifyRepository.deleteAllByUsername(verifyDTO.username); }
     public boolean existsVerify(String username) { return verifyRepository.existsByUsername(username); }
 }

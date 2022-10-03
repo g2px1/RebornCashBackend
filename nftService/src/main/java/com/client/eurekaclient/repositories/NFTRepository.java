@@ -15,4 +15,6 @@ public interface NFTRepository extends MongoRepository<NFT, String> {
     Optional<NFT> findByName(String name);
     Optional<NFT> findByUuid(String uuid);
     Page<NFT> findAllByChain(String chain, Pageable pageable);
+    List<NFT> findByActiveTillLessThanAndStatus(long date, String status);
+    List<NFT> findAll();
 }

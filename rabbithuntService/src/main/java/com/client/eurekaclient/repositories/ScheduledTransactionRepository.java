@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ScheduledTransactionRepository extends MongoRepository<ScheduledTransaction, String> {
     Optional<List<ScheduledTransaction>> findByNftNameAndActiveTillLessThanAndReverted(String name, long activeTill, boolean reverted);
     ScheduledTransaction findFirstByNftName(String name);
+    List<ScheduledTransaction> findAllByActiveTillBeforeAndReverted(long date, boolean reverted);
 }

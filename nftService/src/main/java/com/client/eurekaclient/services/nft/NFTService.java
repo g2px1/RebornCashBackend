@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,9 +29,12 @@ public class NFTService {
         NFTRepository.save(nft);
         return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
     }
-    public ResponseEntity<Object> findAll(int pageNumber, String chain) {
+    public ResponseEntity<Object> findAllByPages(int pageNumber, String chain) {
         Pageable paging = PageRequest.of(pageNumber, 10);
         Page<NFT> page = NFTRepository.findAllByChain(chain, paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent(), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
+    }
+    public List<NFT> findAll() {
+        return NFTRepository.findAll();
     }
 }

@@ -15,4 +15,6 @@ public abstract class ErrorMessage {
     public static String DEFAULT_ERROR;
     @Value("${app.error.message.BOT}")
     public static String BOT;
+    @Value("${app.error.message.INVALID_CODE}")
+    public static String INVALID_CODE;
 }

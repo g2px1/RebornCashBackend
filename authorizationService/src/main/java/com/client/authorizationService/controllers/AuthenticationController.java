@@ -5,6 +5,8 @@ import com.client.authorizationService.services.authorization.AuthorizationServi
 import com.client.authorizationService.services.openfeign.users.UserInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +34,12 @@ public class AuthenticationController {
 
     @PostMapping("/user/validateToken")
     public ResponseEntity<Object> validateToken(@RequestBody String authorizationHeader) {
-        System.out.println(authorizationService.getECKeyData());
         return authorizationService.validateJWT(authorizationHeader);
+    }
+
+    @PostMapping("/user/approveVerifyCode")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> approveVerifyCode(@RequestBody AuthorizationDTO authorizationDTO, Authentication authentication) {
+        return authorizationService.approveVerifyCode(authentication.getName(), authorizationDTO.code);
     }
 }
