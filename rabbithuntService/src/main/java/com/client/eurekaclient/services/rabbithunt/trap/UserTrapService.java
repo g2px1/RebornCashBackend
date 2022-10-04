@@ -69,7 +69,7 @@ public class UserTrapService {
 
     public ResponseEntity<Object> loadTraps(HashMap<String, Integer> pageNumber) {
         if (!pageNumber.containsKey("page")) return ResponseHandler.generateResponse(ErrorMessage.INVALID_DATA, HttpStatus.OK, null);
-        Pageable paging = PageRequest.of(pageNumber.get("pageNumber"), 5);
+        Pageable paging = PageRequest.of(pageNumber.get("page"), 5);
         Page<Trap> page = trapRepository.findAllByStatus("active", paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(TrapResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
     }

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -33,13 +32,7 @@ public class Web3Admin {
         return web3Service.changeBlockchain(blockchainData);
     }
 
-    @PostMapping("/validateParsing")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Object> validateParsing(@RequestBody HashMap<String, String> obj) {
-        return web3Service.validateParsing(obj.get("pathToJson"), obj.get("json"));
-    }
-
-    @PostMapping("/getBlockchainData/{chainName}")
+    @GetMapping("/getBlockchainData/{chainName}")
     public Optional<BlockchainDataResponse> getBlockchainData(@PathVariable String chainName) {
         return web3Service.getBlockchain(chainName);
     }

@@ -390,30 +390,6 @@ public class RouterConfiguration {
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://rabbitHuntService/"))
-                .route(p -> p
-                        .path("/api/rabbithunt/traps/loadTraps/")
-                        .filters(f -> f.filter((exchange, chain) -> {
-                                    ServerHttpRequest req = exchange.getRequest();
-                                    addOriginalRequestUrl(exchange, req.getURI());
-                                    String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/traps/loadTraps/", "/rabbitHuntService/traps/loadTraps/");
-                                    ServerHttpRequest request = req.mutate().path(newPath).build();
-                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
-                                    return chain.filter(exchange.mutate().request(request).build());
-                                }))
-                        .uri("lb://rabbitHuntService/"))
-                .route(p -> p
-                        .path("/api/rabbithunt/traps/loadTraps/")
-                        .filters(f -> f.filter((exchange, chain) -> {
-                                    ServerHttpRequest req = exchange.getRequest();
-                                    addOriginalRequestUrl(exchange, req.getURI());
-                                    String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/traps/loadTraps/", "/rabbitHuntService/traps/loadTraps/");
-                                    ServerHttpRequest request = req.mutate().path(newPath).build();
-                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
-                                    return chain.filter(exchange.mutate().request(request).build());
-                                }))
-                        .uri("lb://rabbitHuntService/"))
                 .build();
     }
 }

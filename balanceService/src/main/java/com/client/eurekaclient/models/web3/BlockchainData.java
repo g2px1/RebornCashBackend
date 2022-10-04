@@ -7,38 +7,21 @@ public class BlockchainData {
     public String url;
     public String name;
     public String nftContractAddress;
-    public String gameContractAddress;
-    public String gameIMMO;
-    public String stableCoinAddress;
     public String hotWalletAddress;
     public String privateKey;
     public String platform = "evm";
-    public String jsonPathToGamePrice;
-    public String gameRequestType;
-    public String gamePriceUrl;
+    public String passwordToWalletFile;
+    public String walletFileName;
 
-    public BlockchainData(String url, String name, String nftContractAddress, String gameContractAddress, String gameIMMO, String stableCoinAddress, String privateKey, String platform, String hotWalletAddress, String jsonPathToGamePrice, String gamePriceUrl, String gameRequestType) {
+    public BlockchainData(String url, String name, String nftContractAddress, String privateKey, String platform, String hotWalletAddress) {
         this.url = url;
         this.name = name;
         this.nftContractAddress = nftContractAddress;
-        this.gameContractAddress = gameContractAddress;
-        this.gameIMMO = gameIMMO;
-        this.stableCoinAddress = stableCoinAddress;
         this.privateKey = privateKey;
         this.platform = platform;
         this.hotWalletAddress = hotWalletAddress;
-        this.jsonPathToGamePrice = jsonPathToGamePrice;
-        this.gamePriceUrl = gamePriceUrl;
-        this.gameRequestType = gameRequestType;
     }
 
-    public String getStableCoinAddress() {
-        return stableCoinAddress;
-    }
-
-    public void setStableCoinAddress(String stableCoinAddress) {
-        this.stableCoinAddress = stableCoinAddress;
-    }
 
     public String getPrivateKey() {
         return privateKey;
@@ -64,14 +47,6 @@ public class BlockchainData {
         this.nftContractAddress = nftContractAddress;
     }
 
-    public String getGameContractAddress() {
-        return gameContractAddress;
-    }
-
-    public void setGameContractAddress(String gameContractAddress) {
-        this.gameContractAddress = gameContractAddress;
-    }
-
     public String getPlatform() {
         return platform;
     }
@@ -94,5 +69,21 @@ public class BlockchainData {
 
     public void setHotWalletAddress(String hotWalletAddress) {
         this.hotWalletAddress = hotWalletAddress;
+    }
+
+    public String getPasswordToWalletFile() {
+        return passwordToWalletFile;
+    }
+
+    public void setPasswordToWalletFile(String passwordToWalletFile) {
+        this.passwordToWalletFile = passwordToWalletFile;
+    }
+
+    public String getWalletFileName() {
+        return walletFileName;
+    }
+
+    public void setWalletFileName(String walletFileName) {
+        this.walletFileName = walletFileName;
     }
 }

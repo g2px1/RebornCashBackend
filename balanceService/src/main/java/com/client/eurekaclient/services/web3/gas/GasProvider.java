@@ -45,4 +45,12 @@ public class GasProvider implements ContractGasProvider {
     public BigInteger getGasLimit() {
         return DefaultGasProvider.GAS_LIMIT.divide(BigInteger.valueOf(10));
     }
+
+    public Web3j getWeb3j() {
+        return web3j;
+    }
+
+    public void setWeb3j(Web3j web3j) {
+        this.web3j = web3j;
+    }
 }
