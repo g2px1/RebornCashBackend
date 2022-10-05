@@ -16,7 +16,7 @@ public class SecuredWEB3 {
     private Web3Service web3Service;
 
     @PostMapping("/sendNativeTokens")
-    public Optional<TransactionResult> sendGame(@RequestBody TransactionRequest transactionRequest) {
+    public Optional<TransactionResult> sendNativeTokenTransaction(@RequestBody TransactionRequest transactionRequest) {
         return web3Service.sendNativeTokenTransaction(transactionRequest.recipientAddress, transactionRequest.chainName, transactionRequest.amount, transactionRequest.username);
     }
 }

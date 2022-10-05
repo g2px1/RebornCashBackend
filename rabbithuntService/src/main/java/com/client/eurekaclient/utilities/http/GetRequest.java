@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import org.springframework.web.client.RestTemplate;
 
 public class GetRequest {
-    private static final RestTemplate restTemplate = new RestTemplate();
+    protected static final RestTemplate restTemplate = new RestTemplate();
 
     public static JSONObject getRequest(String url) {
         return new JSONObject(restTemplate.getForObject(url, String.class));

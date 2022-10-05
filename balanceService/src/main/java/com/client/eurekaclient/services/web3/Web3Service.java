@@ -92,18 +92,17 @@ public class Web3Service {
             return Optional.of(new TransactionResult(null, true, ErrorMessage.TRANSACTION_ERROR));
         }
     }
-    public Optional<TransactionResult> sendSafeNativeTokenTransaction(String recipientAddress, String chainName, double amount, String username, String code) {
+    public TransactionResult sendSafeNativeTokenTransaction(String recipientAddress, String chainName, double amount, String username, String code) {
         User user = userInterface.getUser(username).get();
         try {
-            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(code), 0)) {
-                return Optional.empty();
-            }
+            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(code), 0))
+                return new TransactionResult(null, true, ErrorMessage.INVALID_CODE);
         } catch (GeneralSecurityException e) {
             logger.error(e.getMessage());
-            return Optional.empty();
+            return new TransactionResult(null, true, ErrorMessage.DEFAULT_ERROR);
         }
         Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
-        if (blockchainDataOptional.isEmpty()) return Optional.of(new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED));
+        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED);
         BlockchainData blockchainData = blockchainDataOptional.get();
         amount = Web3Service.rounder.apply(amount);
         Credentials credentials = null;
@@ -113,7 +112,7 @@ public class Web3Service {
                     this.pathToWalletFiles);
         } catch (java.io.IOException | org.web3j.crypto.CipherException e) {
             logger.error(e.getMessage());
-            return Optional.empty();
+            return new TransactionResult(null, true, ErrorMessage.DEFAULT_ERROR);
         }
         GasProvider gasProvider = new GasProvider(blockchainData.url);
         try {
@@ -127,12 +126,14 @@ public class Web3Service {
                     DefaultGasProvider.GAS_LIMIT,
                     BigInteger.valueOf(3_100_000_000L) //maxFeePerGas (max fee transaction willing to pay)
             ).send();
-            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return Optional.empty();
+            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction already exists."));
             transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
-            return Optional.of(new TransactionResult(transactionReceipt, false, null));
+            user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(amount)));
+            userInterface.saveUser(user);
+            return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return Optional.of(new TransactionResult(null, true, ErrorMessage.TRANSACTION_ERROR));
+            return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "something wrong on blockchain."));
         }
     }
 

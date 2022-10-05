@@ -24,6 +24,7 @@ import com.client.eurekaclient.services.openfeign.wallets.ConnectedWalletInterfa
 import com.client.eurekaclient.services.rabbithunt.transaction.ScheduledTxService;
 import com.client.eurekaclient.services.rabbithunt.trap.UserTrapService;
 import com.client.eurekaclient.utilities.http.finance.BenSwapRequest;
+import com.client.eurekaclient.utilities.http.finance.BinanceRequest;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -119,19 +120,18 @@ public class TokensConverter {
                 return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
             }
 
-            double usdAmount = (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
+            double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
+            double bnbAmount = tokensQuantityToUSD * (1/ BinanceRequest.getBNBUSDtPrice());
 
             JSONObject unitResponse = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, convertingTokenRequest.tokenAmount, convertingTokenRequest.tokenName));
 
-            TransactionResult transactionResult = balanceInterface.sendStableCoins(new TransactionRequest(convertingTokenRequest.chainName, username, usdAmount));
+            TransactionResult transactionResult = balanceInterface.sendNativeTokenTransaction(new TransactionRequest(convertingTokenRequest.chainName, username, bnbAmount));
             if (transactionResult.error) {
                 fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(transactionResult.errorMessage, HttpStatus.OK, null);
             }
             user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
             userInterface.saveUser(user);
-
-            balanceInterface.sendIMMOGame(new TransactionRequest(convertingTokenRequest.chainName, username, 10));
 
             if (convertingTokenRequest.tokenName.equalsIgnoreCase("meat"))
                 scheduledTxService.subtractTxByNft(nft.name, convertingTokenRequest.tokenAmount);

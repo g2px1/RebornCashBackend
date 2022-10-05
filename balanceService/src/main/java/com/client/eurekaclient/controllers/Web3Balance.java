@@ -29,7 +29,7 @@ public class Web3Balance {
 
     @PostMapping("/withdrawNativeTokens")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public Optional<TransactionResult> withdrawGame(@RequestBody TransactionRequest transactionRequest, Authentication authentication) {
+    public TransactionResult withdrawGame(@RequestBody TransactionRequest transactionRequest, Authentication authentication) {
         return web3Service.sendSafeNativeTokenTransaction(transactionRequest.recipientAddress, transactionRequest.chainName, transactionRequest.amount, authentication.getName(), transactionRequest.code);
     }
 

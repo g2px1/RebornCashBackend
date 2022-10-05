@@ -1,5 +1,6 @@
 package com.client.eurekaclient;
 
+import com.client.eurekaclient.utilities.http.finance.BinanceRequest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
