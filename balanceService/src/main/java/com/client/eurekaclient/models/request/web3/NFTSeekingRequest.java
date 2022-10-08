@@ -1,15 +1,30 @@
 package com.client.eurekaclient.models.request.web3;
 
 public class NFTSeekingRequest {
-    public long nftId;
+    public long index;
     public String address;
+    public String uuid;
+    public String chainName;
 
-    public long getNftId() {
-        return nftId;
+    public NFTSeekingRequest(long index, String chainName) {
+        this.index = index;
+        this.chainName = chainName;
     }
 
-    public void setNftId(long nftId) {
-        this.nftId = nftId;
+    public NFTSeekingRequest(long index) {
+        this.index = index;
+    }
+
+    public NFTSeekingRequest(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public long getIndex() {
+        return index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
     }
 
     public String getAddress() {

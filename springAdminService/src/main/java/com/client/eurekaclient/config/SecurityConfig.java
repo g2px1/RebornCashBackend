@@ -30,35 +30,7 @@ public class SecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringAntMatchers(
                         "/instances",
-                        "/actuator/**"
-                );
-//        http
-//                .authorizeRequests()
-//                .antMatchers(this.adminServer.getContextPath() + "/assets/**").permitAll()
-//                .antMatchers(this.adminServer.getContextPath() + "/login").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin()
-//                .loginPage(this.adminServer.getContextPath() + "/login")
-//                .successHandler(successHandler)
-//                .and()
-//                .logout()
-//                .logoutUrl(this.adminServer.getContextPath() + "/logout")
-//                .and()
-//                .httpBasic()
-//                .and()
-//                .csrf()
-//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                .ignoringRequestMatchers(
-//                        new AntPathRequestMatcher(this.adminServer.getContextPath() +
-//                                "/instances", HttpMethod.POST.toString()),
-//                        new AntPathRequestMatcher(this.adminServer.getContextPath() +
-//                                "/instances/*", HttpMethod.DELETE.toString()),
-//                        new AntPathRequestMatcher(this.adminServer.getContextPath() + "/actuator/**"))
-//                .and()
-//                .rememberMe()
-//                .key(UUID.randomUUID().toString())
-//                .tokenValiditySeconds(1209600);
+                        "/actuator/**");
         return http.build();
     }
 }

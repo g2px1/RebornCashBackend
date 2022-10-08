@@ -30,6 +30,10 @@ public class NFTController {
     public Optional<NFT> findNftByName(@RequestBody NFTSeekingRequest nftSeekingRequest) {
         return nftService.findByName(nftSeekingRequest.nftName);
     }
+    @PostMapping("/nftService/findByIndex")
+    public Optional<NFT> findByIndexAndChainName(@RequestBody NFTSeekingRequest nftSeekingRequest) {
+        return nftService.findByIndexAndChainName(nftSeekingRequest.index, nftSeekingRequest.chainName);
+    }
     @PostMapping("/existsByIndex")
     public ResponseEntity<Object> existsByIndex(@RequestBody NFTSeekingRequest nftSeekingRequest) {
         return nftService.existsByIndex(nftSeekingRequest.index);
@@ -45,5 +49,9 @@ public class NFTController {
     @PostMapping("/save")
     public ResponseEntity<Object> findByIndex(@RequestBody NFT nft) {
         return nftService.save(nft);
+    }
+    @PostMapping("/save")
+    public ResponseEntity<Object> saveAll(@RequestBody List<NFT> nft) {
+        return nftService.saveAll(nft);
     }
 }

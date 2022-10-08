@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface NFTRepository extends MongoRepository<NFT, String> {
     Optional<NFT> findByIndex(long index);
+    Optional<NFT> findByIndexAndChain(long index, String chainName);
     Boolean existsByIndex(long index);
     List<NFT> findByIndexBetween(long index, long index2);
     Optional<NFT> findByName(String name);

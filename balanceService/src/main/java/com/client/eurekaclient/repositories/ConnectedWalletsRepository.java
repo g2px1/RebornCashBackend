@@ -9,4 +9,5 @@ public interface ConnectedWalletsRepository extends MongoRepository<ConnectedWal
     Optional<ConnectedWallet> findByUsername(String username);
     Optional<ConnectedWallet> findByAddress(String address);
     boolean existsByUsername(String address);
+    void deleteByUsername(String username);
 }

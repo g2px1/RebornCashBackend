@@ -1,6 +1,6 @@
 package com.client.eurekaclient.web3.utilities;//package com.client.eurekaclient.web3.utilities;
 //
-//import com.client.eurekaclient.web3.contracts.nft.RebornNFT;
+//import com.client.eurekaclient.web3.contracts.nft.OreChainNFT;
 //import org.web3j.contracts.eip20.generated.ERC20;
 //import org.web3j.contracts.eip721.generated.ERC721;
 //import org.web3j.crypto.Credentials;
@@ -30,16 +30,16 @@ package com.client.eurekaclient.web3.utilities;//package com.client.eurekaclient
 //        erc20Token.transfer(to, value.multiply(BigInteger.valueOf(1_000_000_000_000_000_000L))).send();
 //    }
 //
-//    public static RebornNFT getContract() {
-//        return RebornNFT.load(Constants.NFTContractAddress,
+//    public static OreChainNFT getContract() {
+//        return OreChainNFT.load(Constants.NFTContractAddress,
 //                Web3j.build(new HttpService(Constants.blockChainUrl)),
 //                Credentials.create(Constants.privateKey),
 //                new DefaultGasProvider().getGasPrice(),
 //                new DefaultGasProvider().getGasLimit());
 //    }
 //
-//    public static RebornNFT getTestContract() {
-//        return RebornNFT.load(Constants.NFTtestContractAddress,
+//    public static OreChainNFT getTestContract() {
+//        return OreChainNFT.load(Constants.NFTtestContractAddress,
 //                Web3j.build(new HttpService(Constants.blockChainUrl)),
 //                Credentials.create(Constants.privateKey),
 //                new DefaultGasProvider().getGasPrice(),

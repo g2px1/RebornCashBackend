@@ -22,11 +22,16 @@ public class NFTService {
     private NFTRepository NFTRepository;
 
     public Optional<NFT> findByIndex(long index) { return NFTRepository.findByIndex(index); }
+    public Optional<NFT> findByIndexAndChainName(long index, String chainName) { return NFTRepository.findByIndexAndChain(index, chainName); }
     public ResponseEntity<Object> existsByIndex(long index) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.existsByIndex(index));}
     public Optional<NFT> findByName(String name) { return  NFTRepository.findByName(name); }
     public ResponseEntity<Object> findByUuid(String uuid) {return ResponseHandler.generateResponse(null, HttpStatus.OK, NFTRepository.findByUuid(uuid));}
     public ResponseEntity<Object> save(NFT nft) {
         NFTRepository.save(nft);
+        return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
+    }
+    public ResponseEntity<Object> saveAll(List<NFT> nft) {
+        NFTRepository.saveAll(nft);
         return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
     }
     public ResponseEntity<Object> findAllByPages(int pageNumber, String chain) {

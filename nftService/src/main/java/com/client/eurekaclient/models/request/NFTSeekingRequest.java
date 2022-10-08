@@ -4,7 +4,12 @@ public class NFTSeekingRequest {
     public String nftName;
     public String uuid;
     public long index;
+    public String chainName;
 
+    public NFTSeekingRequest(long nftId, String chainName) {
+        this.index = nftId;
+        this.chainName = chainName;
+    }
     public String getNftName() {
         return nftName;
     }
