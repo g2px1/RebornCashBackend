@@ -35,7 +35,11 @@ public class UserService {
         return usersRepository.findFirstByUsername(name);
     }
     public Boolean saveUser(User requestUser) {
-        requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
+        if (!requestUser.getRoles().get(0).getName().name().equalsIgnoreCase("admin")) {
+            requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
+            usersRepository.save(requestUser);
+            return true;
+        }
         usersRepository.save(requestUser);
         return true;
     }

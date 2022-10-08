@@ -40,12 +40,12 @@ public class YahooFinanceRequest extends GetRequest {
     public static Double getOptionOptionalRegularMarketPrice(String optionName) {
         Optional<JSONObject> optionalPrice = YahooFinanceRequest.getOptionPrice(optionName);
         if(optionalPrice.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "trap not exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "mine not exists");
         double price;
         try {
             price = optionalPrice.get().getJSONObject("quoteSummary").getJSONArray("result").getJSONObject(0).getJSONObject("price").getJSONObject("regularMarketPrice").getDouble("raw");
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "trap not exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "mine not exists");
         }
         return price;
     }

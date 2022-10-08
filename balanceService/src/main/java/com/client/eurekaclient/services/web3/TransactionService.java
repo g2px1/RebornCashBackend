@@ -45,7 +45,7 @@ public class TransactionService {
         if (optionalBlockchainData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, false);
         BlockchainData blockchainData = optionalBlockchainData.get();
         StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.privateKey);
-        Optional<org.web3j.protocol.core.methods.response.Transaction>transaction;
+        Optional<org.web3j.protocol.core.methods.response.Transaction> transaction;
         try {
             transaction = standardContractProvider.getWeb3j().ethGetTransactionByHash(hash).send().getTransaction();
             if (transaction.isEmpty()) return ResponseHandler.generateResponse("bad transaction: not found.", HttpStatus.BAD_REQUEST, false);
@@ -54,7 +54,8 @@ public class TransactionService {
             return ResponseHandler.generateResponse("error occurred: cannot send request to WEB3 network", HttpStatus.BAD_REQUEST, false);
         }
         Optional<User> optionalUser = userInterface.getUser(username);
-        if (optionalUser.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, false);
+        if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, false);
+        if(!transaction.get().getTo().equalsIgnoreCase(blockchainData.hotWalletAddress)) return ResponseHandler.generateResponse(ErrorMessage.INVALID_RECIPIENT, HttpStatus.BAD_REQUEST, false);
         User user = optionalUser.get();
         BigDecimal amount = new BigDecimal(new BigInteger(transaction.get().getInput().substring(74), 16)).divide(BigDecimal.valueOf(Math.pow(10, 18)));
         user.setBalance(user.getBalance().add(amount));

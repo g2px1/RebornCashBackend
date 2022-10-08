@@ -4,9 +4,9 @@ import com.client.eurekaclient.messages.ErrorMessage;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.CellsLock;
 import com.client.eurekaclient.models.lock.UserLock;
-import com.client.eurekaclient.models.market.rabbithunt.CellsPack;
+import com.client.eurekaclient.models.market.goldenrush.CellsPack;
 import com.client.eurekaclient.models.nft.NFT;
-import com.client.eurekaclient.models.rabbithunt.trap.Trap;
+import com.client.eurekaclient.models.goldenrush.mine.Mine;
 import com.client.eurekaclient.models.request.NFT.NFTSeekingRequest;
 import com.client.eurekaclient.models.request.cells.BuyCellsPacks;
 import com.client.eurekaclient.models.request.cells.SellCellsRequest;
@@ -15,7 +15,7 @@ import com.client.eurekaclient.models.request.market.ProductSeekingRequest;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.models.request.web3.ConnectedWallet;
 import com.client.eurekaclient.models.response.ResponseHandler;
-import com.client.eurekaclient.repositories.TrapRepository;
+import com.client.eurekaclient.repositories.MineRepository;
 import com.client.eurekaclient.services.lock.FairLock;
 import com.client.eurekaclient.services.openfeign.NFT.NFTInterface;
 import com.client.eurekaclient.services.openfeign.market.MarketInterface;
@@ -46,7 +46,7 @@ public class CellsService {
     @Autowired
     private ConnectedWalletInterface connectedWalletInterface;
     @Autowired
-    private TrapRepository trapRepository;
+    private MineRepository mineRepository;
     @Autowired
     private NFTInterface nftInterface;
     @Autowired
@@ -71,7 +71,7 @@ public class CellsService {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
         }
-        if(!trapRepository.existsByName(StringUtils.capitalize(sellCellsRequest.trapName.toLowerCase(Locale.ROOT)))) {
+        if(!mineRepository.existsByName(StringUtils.capitalize(sellCellsRequest.trapName.toLowerCase(Locale.ROOT)))) {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.OK, null);
         }
@@ -103,8 +103,8 @@ public class CellsService {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.AMOUNT_IS_TOO_LARGE, HttpStatus.OK, null);
         }
-        Trap trap = trapRepository.findByName(StringUtils.capitalize(sellCellsRequest.trapName.toLowerCase(Locale.ROOT)));
-        if(!trap.status) {
+        Mine mine = mineRepository.findByName(StringUtils.capitalize(sellCellsRequest.trapName.toLowerCase(Locale.ROOT)));
+        if(!mine.status) {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.TRAP_CLOSED, HttpStatus.OK, null);
         }
@@ -129,7 +129,7 @@ public class CellsService {
             return ResponseHandler.generateResponse(ErrorMessage.LOW_TOKEN_BALANCE, HttpStatus.OK, null);
         }
         JSONObject optionalJSONObject = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, sellCellsRequest.cellsQuantity, sellCellsRequest.trapName.toLowerCase(Locale.ROOT)));
-        marketInterface.save(new CellsPack(sellCellsRequest.price, username, sellCellsRequest.cellsQuantity, new Date().getTime(), null, String.format("Cells from: %s", trap.name), true, UUID.randomUUID().toString(), nft.name, trap.name));
+        marketInterface.save(new CellsPack(sellCellsRequest.price, username, sellCellsRequest.cellsQuantity, new Date().getTime(), null, String.format("Cells from: %s", mine.name), true, UUID.randomUUID().toString(), nft.name, mine.name));
         fairLock.unlockUserLock(username);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, null);
     }
@@ -191,7 +191,7 @@ public class CellsService {
         if(currentUser.getBalance().compareTo(BigDecimal.valueOf(cellsPackToBuy.price)) < 0) {
             fairLock.unlockUserLock(username);
             fairLock.unlockCellsLock(buyCellsPacks.uuid);
-            return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(ErrorMessage.LOW_NATIVE_TOKENS_BALANCE, HttpStatus.OK, null);
         }
         cellsPackToBuy.setStatus(false);
 

@@ -24,11 +24,11 @@ public abstract class ErrorMessage {
     @Value("${app.error.message.TRANSACTION_ERROR}")
     public static String TRANSACTION_ERROR;
     @Value("${app.error.message.LOW_GAME_BALANCE}")
-    public static String LOW_GAME_BALANCE;
+    public static String LOW_NATIVE_TOKENS_BALANCE;
     @Value("${app.error.message.LOW_CARROT_BALANCE}")
     public static String LOW_CARROT_BALANCE;
-    @Value("${app.error.message.LOW_MEAT_BALANCE}")
-    public static String LOW_MEAT_BALANCE;
+    @Value("${app.error.message.LOW_GOLD_COINS_BALANCE}")
+    public static String LOW_GOLD_COINS_BALANCE;
     @Value("${app.error.message.LOW_TOKEN_BALANCE}")
     public static String LOW_TOKEN_BALANCE;
     @Value("${app.error.message.BALANCE_NOT_FOUND}")

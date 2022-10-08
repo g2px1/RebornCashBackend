@@ -7,7 +7,7 @@ public class ProductSeekingRequest {
     public boolean direction; // true - asc, false - desc
     public String type;
     public String tokenName;
-    public String trapName;
+    public String mineName;
 
     public ProductSeekingRequest() {
     }

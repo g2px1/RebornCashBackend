@@ -6,8 +6,8 @@ import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.nft.NFT;
 import com.client.eurekaclient.models.request.NFT.NFTSeekingRequest;
-import com.client.eurekaclient.models.request.rabbithunt.token.ConvertingTokenRequest;
-import com.client.eurekaclient.models.request.rabbithunt.token.InvestmentInBurgerRequest;
+import com.client.eurekaclient.models.request.goldenrush.token.ConvertingTokenRequest;
+import com.client.eurekaclient.models.request.goldenrush.token.InvestmentInBurgerRequest;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.models.request.web3.ConnectedWallet;
 import com.client.eurekaclient.models.request.web3.TransactionRequest;
@@ -22,7 +22,7 @@ import com.client.eurekaclient.services.openfeign.users.UserInterface;
 import com.client.eurekaclient.services.openfeign.wallets.BalanceInterface;
 import com.client.eurekaclient.services.openfeign.wallets.ConnectedWalletInterface;
 import com.client.eurekaclient.services.rabbithunt.transaction.ScheduledTxService;
-import com.client.eurekaclient.services.rabbithunt.trap.UserTrapService;
+import com.client.eurekaclient.services.rabbithunt.mine.UserMineService;
 import com.client.eurekaclient.utilities.http.finance.BenSwapRequest;
 import com.client.eurekaclient.utilities.http.finance.BinanceRequest;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
@@ -60,10 +60,10 @@ public class TokensConverter {
     private BlockchainInterface blockchainInterface;
     @Autowired
     private FairLock fairLock;
-    private static final Logger logger = LoggerFactory.getLogger(UserTrapService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserMineService.class);
 
     public ResponseEntity<Object> convertLayer1TokensIntoGame(ConvertingTokenRequest convertingTokenRequest, String username) {
-        if (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot") || convertingTokenRequest.tokenName.equalsIgnoreCase("meat")) {
+        if (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin") || convertingTokenRequest.tokenName.equalsIgnoreCase("gold_coin")) {
             Optional<UserLock> userLock = fairLock.getUserFairLock(username);
             if(userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
             Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(convertingTokenRequest.nftIndex));
@@ -112,7 +112,7 @@ public class TokensConverter {
             }
             if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.LOW_GAME_BALANCE, HttpStatus.OK, null);
+                return ResponseHandler.generateResponse(ErrorMessage.LOW_NATIVE_TOKENS_BALANCE, HttpStatus.OK, null);
             }
             Optional<JSONArray> optionalGameData = BenSwapRequest.getGameData();
             if (optionalGameData.isEmpty()) {
@@ -120,7 +120,7 @@ public class TokensConverter {
                 return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
             }
 
-            double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("carrot")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
+            double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
             double bnbAmount = tokensQuantityToUSD * (1/ BinanceRequest.getBNBUSDtPrice());
 
             JSONObject unitResponse = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, convertingTokenRequest.tokenAmount, convertingTokenRequest.tokenName));
@@ -133,7 +133,7 @@ public class TokensConverter {
             user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
             userInterface.saveUser(user);
 
-            if (convertingTokenRequest.tokenName.equalsIgnoreCase("meat"))
+            if (convertingTokenRequest.tokenName.equalsIgnoreCase("gold_coin"))
                 scheduledTxService.subtractTxByNft(nft.name, convertingTokenRequest.tokenAmount);
 
             fairLock.unlockUserLock(username);
@@ -180,13 +180,13 @@ public class TokensConverter {
         }
         if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(ErrorMessage.LOW_GOLD_COINS_BALANCE, HttpStatus.BAD_REQUEST, null);
         }
         NFT nft = optionalNFT.get();
         Optional<List<ScheduledTransaction>> optionalScheduledTransactionList = scheduledTransactionRepository.findByNftNameAndActiveTillLessThanAndReverted(nft.name, new Date().getTime(), false);
         optionalScheduledTransactionList.ifPresent(layer1ExpiringTransactionsList -> { // check if list !empty
             layer1ExpiringTransactionsList.forEach(scheduledTransaction -> { // looking for all Transactions and their amounts
-                unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, scheduledTransaction.amount, "meat"));
+                unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, scheduledTransaction.amount, scheduledTransaction.tokenName));
                 scheduledTransaction.setReverted(true); // setting status of transaction
             });
             scheduledTransactionRepository.saveAll(optionalScheduledTransactionList.get()); // saving changes if exists
@@ -197,24 +197,24 @@ public class TokensConverter {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
-        Optional<Double> optionalInCarrotsBalance = UserTrapService.getValueInDouble(optionalJsonBalance.get(), "meat");
+        Optional<Double> optionalInCarrotsBalance = UserMineService.getValueInDouble(optionalJsonBalance.get(), "gold_coin");
         if (optionalInCarrotsBalance.isEmpty()) {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
         }
-        double inMeatBalance = optionalInCarrotsBalance.get();
-        if (inMeatBalance < investmentInBurgerRequest.quantityOfBurgers * 10) {
+        double inGoldCoinsBalance = optionalInCarrotsBalance.get();
+        if (inGoldCoinsBalance < investmentInBurgerRequest.quantityOfBurgers * 10) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.LOW_MEAT_BALANCE, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(ErrorMessage.LOW_GOLD_COINS_BALANCE, HttpStatus.OK, null);
         }
 
-        JSONObject outMeat = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "meat"));
-        JSONObject inBurger = unitInterface.sendTokens(new TransferTokensRequests(nft.name, "merchant", investmentInBurgerRequest.quantityOfBurgers, "burger"));
+        JSONObject goldCoin = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "gold_coin"));
+        JSONObject inIngot = unitInterface.sendTokens(new TransferTokensRequests(nft.name, "merchant", investmentInBurgerRequest.quantityOfBurgers, "gold_ingot"));
         user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
         userInterface.saveUser(user);
         scheduledTxService.subtractTxByNft(nft.name, investmentInBurgerRequest.quantityOfBurgers * 10);
         fairLock.unlockUserLock(username);
-        return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("meatTransactionHash", outMeat.toMap(), "burgerTransactionHash", inBurger.toMap())));
+        return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("goldCoinTransactionHash", goldCoin.toMap(), "goldIngotTransactionHash", inIngot.toMap())));
     }
 
     private static Optional<Double> getValueInDouble(JSONObject balance, String tokenName) {

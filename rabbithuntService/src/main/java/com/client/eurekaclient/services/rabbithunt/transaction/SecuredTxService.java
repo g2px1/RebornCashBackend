@@ -1,9 +1,9 @@
 package com.client.eurekaclient.services.rabbithunt.transaction;
 
 import com.client.eurekaclient.messages.ErrorMessage;
-import com.client.eurekaclient.models.rabbithunt.tokens.Token;
-import com.client.eurekaclient.models.request.rabbithunt.token.CreateTokenRequest;
-import com.client.eurekaclient.models.request.rabbithunt.token.TokenSeekingRequest;
+import com.client.eurekaclient.models.goldenrush.tokens.Token;
+import com.client.eurekaclient.models.request.goldenrush.token.CreateTokenRequest;
+import com.client.eurekaclient.models.request.goldenrush.token.TokenSeekingRequest;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.repositories.TokensRepository;
@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

@@ -225,7 +225,7 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/web3/deposit", "/web3BalanceService/depositGame/");
+                                    String newPath = path.replaceAll("/api/web3/deposit", "/web3BalanceService/depositNativeTokens/");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -237,7 +237,19 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/web3/withdrawGame", "/web3BalanceService/depositGame/withdrawGame");
+                                    String newPath = path.replaceAll("/api/web3/withdraw", "/web3BalanceService/withdrawNativeTokens");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://balanceService/"))
+                .route(p -> p
+                        .path("/api/web3/getBlockchainWalletAddress/**")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/web3/getBlockchainWalletAddress/(?<chainName>.*)", "/oreChainAddress/getBlockchainWalletAddress/${chainName}");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -283,113 +295,137 @@ public class RouterConfiguration {
     public RouteLocator rabbitHuntRouter(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/rabbithunt/converting/convertLayer1")
+                        .path("/api/orehunt/converting/convertLayer1")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/convertLayer1", "/rabbitHuntService/converting/convertLayer1");
+                                    String newPath = path.replaceAll("/api/orehunt/convertLayer1", "/oreHuntService/converting/convertLayer1");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/converting/investInBurger")
+                        .path("/api/orehunt/converting/investInGoldIngot")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/converting/investInBurger", "/rabbitHuntService/converting/investInBurger");
+                                    String newPath = path.replaceAll("/api/orehunt/converting/investInGoldIngot", "/oreHuntService/converting/investInGoldIngot");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/market/sellTokens")
+                        .path("/api/orehunt/market/sellTokens")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/market/sellTokens", "/rabbitHuntService/market/sellTokens");
+                                    String newPath = path.replaceAll("/api/orehunt/market/sellTokens", "/oreHuntService/market/sellTokens");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/market/buyTokens")
+                        .path("/api/orehunt/market/buyTokens")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/market/buyTokens", "/rabbitHuntService/market/buyTokens");
+                                    String newPath = path.replaceAll("/api/orehunt/market/buyTokens", "/oreHuntService/market/buyTokens");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/market/sellCellsPack")
+                        .path("/api/orehunt/market/sellCellsPack")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/market/sellCellsPack", "/rabbitHuntService/market/sellCellsPack");
+                                    String newPath = path.replaceAll("/api/orehunt/market/sellCellsPack", "/oreHuntService/market/sellCellsPack");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/market/buyCellsPack/")
+                        .path("/api/orehunt/market/buyCellsPack/")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/market/buyCellsPack", "/rabbitHuntService/market/buyCellsPack");
+                                    String newPath = path.replaceAll("/api/orehunt/market/buyCellsPack", "/oreHuntService/market/buyCellsPack");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/market/withdrawCellsPacks/")
+                        .path("/api/orehunt/market/withdrawCellsPacks/")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/market/withdrawCellsPacks", "/rabbitHuntService/market/withdrawCellsPacks");
+                                    String newPath = path.replaceAll("/api/orehunt/market/withdrawCellsPacks", "/oreHuntService/market/withdrawCellsPacks");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/traps/loadTraps/")
+                        .path("/api/orehunt/mines/loadMines/")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/traps/loadTraps/", "/rabbitHuntService/traps/loadTraps/");
+                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMines/", "/oreHuntService/mines/loadMines/");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/rabbithunt/traps/buyTrapCells/")
+                        .path("/api/orehunt/mines/loadMinesImage/**")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/rabbithunt/traps/buyTrapCells/", "/rabbitHuntService/traps/buyTrapCells/");
+                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMinesImage/(?<mineImage>.*)", "/oreHuntService/mines/getMinesImage/${mineImage}");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://rabbitHuntService/"))
+                        .uri("lb://oreHuntService/"))
+                .route(p -> p
+                        .path("/api/orehunt/mines/buyMineCells/")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/orehunt/mines/buyMineCells/", "/oreHuntService/mines/buyMineCells/");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://oreHuntService/"))
+                .route(p -> p
+                        .path("/api/orehunt/coins/buyCoins/")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/orehunt/coins/buyCoins/", "/oreHuntService/coins/buyCoinsFromMerchant/");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://oreHuntService/"))
                 .build();
     }
 }

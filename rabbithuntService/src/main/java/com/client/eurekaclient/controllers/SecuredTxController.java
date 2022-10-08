@@ -1,7 +1,7 @@
 package com.client.eurekaclient.controllers;
 
-import com.client.eurekaclient.models.request.rabbithunt.token.CreateTokenRequest;
-import com.client.eurekaclient.models.request.rabbithunt.token.TokenSeekingRequest;
+import com.client.eurekaclient.models.request.goldenrush.token.CreateTokenRequest;
+import com.client.eurekaclient.models.request.goldenrush.token.TokenSeekingRequest;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.services.rabbithunt.transaction.SecuredTxService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/rabbitHuntService/securedTxService/")
+@RequestMapping("/oreChainService/securedTxService/")
 public class SecuredTxController {
     @Autowired
     private SecuredTxService securedTxService;

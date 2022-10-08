@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
-
 public class AuthenticationJWTFilter extends OncePerRequestFilter {
     @Autowired
     private JWTUtility jwtUtility;
@@ -41,7 +41,7 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private VerifyInterface verifyInterface;
     @Autowired
     private KeyInterface keyInterface;
-    private volatile JWS jws = new JWS(null);
+    private JWS jws = new JWS(null);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -59,9 +59,6 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 if (user.isTwoFA() && verifyInterface.isExistVerify(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.NEED_TO_PASS_2FA);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                Date exp = Date.from(LocalDateTime.now().plusMinutes(30)
-                        .atZone(ZoneId.systemDefault()).toInstant());
-                response.setHeader("AccessToken", jws.generateJWSWithTime(username, exp));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
@@ -77,3 +74,4 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
         return null;
     }
 }
+

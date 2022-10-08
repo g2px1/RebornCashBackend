@@ -31,4 +31,6 @@ public abstract class ErrorMessage {
     public static String METAMASK_ERROR;
     @Value("${app.error.message.BLOCKCHAIN_ALREADY_ADDED}")
     public static String BLOCKCHAIN_ALREADY_ADDED;
+    @Value("${app.error.message.INVALID_RECIPIENT}")
+    public static String INVALID_RECIPIENT;
 }

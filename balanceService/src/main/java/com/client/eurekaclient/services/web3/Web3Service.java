@@ -74,16 +74,9 @@ public class Web3Service {
         }
         GasProvider gasProvider = new GasProvider(blockchainData.url);
         try {
-
-            TransactionReceipt transactionReceipt = Transfer.sendFundsEIP1559(
-                    gasProvider.getWeb3j(), credentials,
-                    recipientAddress, //toAddress
-                    BigDecimal.valueOf(amount), //value
-                    Convert.Unit.ETHER, //unit
-                    BigInteger.valueOf(8_000_000),
-                    DefaultGasProvider.GAS_LIMIT,
-                    BigInteger.valueOf(3_100_000_000L) //maxFeePerGas (max fee transaction willing to pay)
-            ).send();
+            TransactionReceipt transactionReceipt = Transfer.sendFunds(
+                    gasProvider.getWeb3j(), credentials, recipientAddress,
+                    BigDecimal.valueOf(amount), Convert.Unit.ETHER).send();
             if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return Optional.empty();
             transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
             return Optional.of(new TransactionResult(transactionReceipt, false, null));
@@ -108,24 +101,17 @@ public class Web3Service {
         Credentials credentials = null;
         try {
             credentials = WalletUtils.loadCredentials(
-                    pathToWalletFiles,
-                    this.pathToWalletFiles);
+                    blockchainData.passwordToWalletFile,
+                    this.pathToWalletFiles+blockchainData.walletFileName);
         } catch (java.io.IOException | org.web3j.crypto.CipherException e) {
             logger.error(e.getMessage());
             return new TransactionResult(null, true, ErrorMessage.DEFAULT_ERROR);
         }
         GasProvider gasProvider = new GasProvider(blockchainData.url);
         try {
-
-            TransactionReceipt transactionReceipt = Transfer.sendFundsEIP1559(
-                    gasProvider.getWeb3j(), credentials,
-                    recipientAddress, //toAddress
-                    BigDecimal.valueOf(amount), //value
-                    Convert.Unit.ETHER, //unit
-                    BigInteger.valueOf(8_000_000),
-                    DefaultGasProvider.GAS_LIMIT,
-                    BigInteger.valueOf(3_100_000_000L) //maxFeePerGas (max fee transaction willing to pay)
-            ).send();
+            TransactionReceipt transactionReceipt = Transfer.sendFunds(
+                    gasProvider.getWeb3j(), credentials, recipientAddress,
+                    BigDecimal.valueOf(amount), Convert.Unit.ETHER).send();
             if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction already exists."));
             transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
             user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(amount)));
@@ -133,7 +119,7 @@ public class Web3Service {
             return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "something wrong on blockchain."));
+            return new TransactionResult(null, true, ErrorMessage.TRANSACTION_ERROR);
         }
     }
 
@@ -151,23 +137,37 @@ public class Web3Service {
         String fileName = null;
         try {
             fileName = WalletUtils.generateNewWalletFile(
-                    RandomPasswordGenerator.generateRandomPassword(),
+                    password,
                     new File(this.pathToWalletFiles));
         } catch (org.web3j.crypto.CipherException | java.security.InvalidAlgorithmParameterException | java.security.NoSuchAlgorithmException | java.security.NoSuchProviderException | java.io.IOException e) {
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.OK, true);
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.OK, null);
+        }
+        Credentials credentials = null;
+        try {
+            credentials = WalletUtils.loadCredentials(password, this.pathToWalletFiles+fileName);
+        } catch (java.io.IOException | org.web3j.crypto.CipherException e) {
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.OK, null);
         }
         if (blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name.toLowerCase(Locale.ROOT))) return ResponseHandler.generateResponse(ErrorMessage.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
         blockchainData.setPasswordToWalletFile(password);
         blockchainData.setWalletFileName(fileName);
+        blockchainData.setHotWalletAddress(credentials.getAddress());
         blockchainsRepository.save(blockchainData);
-        return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, true);
+        return ResponseHandler.generateResponse(null , HttpStatus.OK, true);
     }
 
     public Optional<BlockchainDataResponse> getBlockchain(String chainName) {
         Optional<BlockchainData> optionalBlockchainData = blockchainsRepository.findByName(chainName);
         if (optionalBlockchainData.isEmpty()) return Optional.empty();
         return BlockchainDataResponse.build(optionalBlockchainData.get(), pathToWalletFiles);
+    }
+
+    public ResponseEntity<Object> getAddress(String chainName) {
+        Optional<BlockchainData> blockchainData = blockchainsRepository.findByName(chainName);
+        if(blockchainData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, null);
+        return ResponseHandler.generateResponse(blockchainData.get().hotWalletAddress, HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> changeBlockchain(BlockchainData blockchainData) {

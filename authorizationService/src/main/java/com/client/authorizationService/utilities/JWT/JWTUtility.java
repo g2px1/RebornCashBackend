@@ -39,4 +39,12 @@ public class JWTUtility {
         }
         return false;
     }
+
+    public JWS getJws() {
+        return jws;
+    }
+
+    public void setJws(JWS jws) {
+        this.jws = jws;
+    }
 }

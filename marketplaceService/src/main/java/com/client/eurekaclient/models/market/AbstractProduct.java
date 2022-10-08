@@ -1,10 +1,9 @@
 package com.client.eurekaclient.models.market;
 
-import com.client.eurekaclient.models.market.rabbithunt.CellsPack;
-import com.client.eurekaclient.models.market.rabbithunt.Token;
+import com.client.eurekaclient.models.market.goldenrush.CellsPack;
+import com.client.eurekaclient.models.market.goldenrush.Token;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;

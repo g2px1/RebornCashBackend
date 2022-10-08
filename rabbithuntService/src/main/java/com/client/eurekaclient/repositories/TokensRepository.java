@@ -1,6 +1,6 @@
 package com.client.eurekaclient.repositories;
 
-import com.client.eurekaclient.models.rabbithunt.tokens.Token;
+import com.client.eurekaclient.models.goldenrush.tokens.Token;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
