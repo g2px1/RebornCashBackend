@@ -244,6 +244,18 @@ public class RouterConfiguration {
                                 }))
                         .uri("lb://balanceService/"))
                 .route(p -> p
+                        .path("/api/web3/connectMetamask")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/web3/connectMetamask", "/connectedWalletsService/connectedWallet");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://balanceService/"))
+                .route(p -> p
                         .path("/api/web3/getBlockchainWalletAddress/**")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
