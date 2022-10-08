@@ -50,7 +50,7 @@ public class NFTController {
     public ResponseEntity<Object> findByIndex(@RequestBody NFT nft) {
         return nftService.save(nft);
     }
-    @PostMapping("/save")
+    @PostMapping("/saveAll")
     public ResponseEntity<Object> saveAll(@RequestBody List<NFT> nft) {
         return nftService.saveAll(nft);
     }

@@ -19,7 +19,7 @@ public class NFTInactivateScheduler {
     private NFTRepository nftRepository;
 
     @Scheduled(cron = "0 0 0/1 * * ?")
-    public void scheduleFixedDelayTask() {
+    public void scheduledNftDeactivator() {
         Runnable firstHalf = () -> {
             List<NFT> nftList = nftRepository.findByActiveTillLessThanAndStatus(new Date().getTime(), "active").stream().parallel().map(nft -> {
                 if (nft.activeTill < new Date().getTime())
