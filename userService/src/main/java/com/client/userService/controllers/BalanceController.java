@@ -8,13 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/userService/balance/")
+@RequestMapping("/userService/userdata/")
 public class BalanceController {
     @Autowired
     private UserService userService;
@@ -25,5 +26,17 @@ public class BalanceController {
         Optional<User> optionalUser = userService.getUser(username);
         if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, optionalUser.get().getBalance());
+    }
+
+    @GetMapping("/getCode/")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> getCode(Authentication authentication) {
+        return userService.getCode(authentication.getName());
+    }
+
+    @PostMapping("/set2FA/")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<Object> set2FA(Authentication authentication) {
+        return userService.set2FA(authentication.getName());
     }
 }

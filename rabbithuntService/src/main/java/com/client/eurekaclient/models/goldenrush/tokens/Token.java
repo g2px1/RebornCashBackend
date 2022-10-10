@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 
-@Document(collection = "rabbitHuntTokens")
+@Document(collection = "oreHuntTokens")
 public class Token {
     @Id
     public String id; // mongo id

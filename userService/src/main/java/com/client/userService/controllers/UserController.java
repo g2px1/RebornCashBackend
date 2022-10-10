@@ -28,6 +28,8 @@ public class UserController {
     public Boolean saveUser(@RequestBody User requestUser) { return userService.saveUser(requestUser); }
     @PostMapping("/saveAll")
     public Boolean saveAll(@RequestBody List<User> requestUser) { return userService.saveAll(requestUser); }
+    @PostMapping("/createUser")
+    public Boolean createUser(@RequestBody User requestUser) { return userService.createUser(requestUser); }
     @PostMapping("/register")
     public Boolean registerUser(@RequestBody User requestUser) { return userService.registerUser(requestUser); }
     @GetMapping("/isExists/{name}")

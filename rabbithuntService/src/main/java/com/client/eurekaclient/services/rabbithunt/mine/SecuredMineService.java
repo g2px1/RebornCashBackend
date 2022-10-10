@@ -79,7 +79,7 @@ public class SecuredMineService {
             logger.error(e.getMessage());
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
-        if (mineRepository.existsByName(StringUtils.capitalize(mineRequest.name.toLowerCase(Locale.ROOT)).trim()))
+        if (mineRepository.existsByName(mineRequest.name.toLowerCase(Locale.ROOT).trim()))
             return ResponseHandler.generateResponse("Mine exists.", HttpStatus.BAD_REQUEST, null);
         if (!YahooFinanceRequest.optionExists(mineRequest.optionName.toUpperCase(Locale.ROOT).trim()))
             return ResponseHandler.generateResponse("Option doesn't exist on Yahoo finance.", HttpStatus.BAD_REQUEST, null);
@@ -89,16 +89,16 @@ public class SecuredMineService {
             return ResponseHandler.generateResponse("'activeTill' should be filled in", HttpStatus.BAD_REQUEST, null);
         storageService.store(mineRequest.imageFile);
         double optionPrice = YahooFinanceRequest.getOptionOptionalRegularMarketPrice(mineRequest.optionName) * 100;
-        mineRepository.save(new Mine(StringUtils.capitalize(mineRequest.name.toLowerCase(Locale.ROOT)).trim(), UUID.randomUUID().toString(), mineRequest.imageFile.getOriginalFilename().trim(), mineRequest.cells, mineRequest.created, mineRequest.activeAfter, mineRequest.optionType.trim(), mineRequest.tools.trim(), Math.round(mineRequest.strikePrice), mineRequest.cells, mineRequest.tokenName.trim(), mineRequest.tokenTotalWeight, ((optionPrice * mineRequest.quantityOfLots) / mineRequest.cells), mineRequest.optionName.trim(), true, mineRequest.activeTill, mineRequest.quantityOfLots));
+        mineRepository.save(new Mine(mineRequest.name.toLowerCase(Locale.ROOT).trim(), UUID.randomUUID().toString(), mineRequest.imageFile.getOriginalFilename().trim(), mineRequest.cells, mineRequest.created, mineRequest.activeAfter, mineRequest.optionType.trim(), mineRequest.tools.trim(), Math.round(mineRequest.strikePrice), mineRequest.cells, mineRequest.tokenName.trim(), mineRequest.tokenTotalWeight, ((optionPrice * mineRequest.quantityOfLots) / mineRequest.cells), mineRequest.optionName.trim(), true, mineRequest.activeTill, mineRequest.quantityOfLots));
         PostRequest.createTokenTransaction(convertToHex(String.format("{\"name\": \"%s\", \"supply\": %s}", mineRequest.name.toLowerCase(Locale.ROOT).trim(), mineRequest.cells)));
         tokensRepository.save(new Token(mineRequest.name.toLowerCase(Locale.ROOT).trim(), BigDecimal.valueOf(mineRequest.cells), (short) 1, "mine"));
         return ResponseHandler.generateResponse("ok", HttpStatus.OK, true);
     }
 
     public ResponseEntity<Object> editMine(MineRequest mineRequest) {
-        if (!mineRepository.existsByName(StringUtils.capitalize(mineRequest.name.toLowerCase(Locale.ROOT))))
+        if (!mineRepository.existsByName(mineRequest.name.toLowerCase(Locale.ROOT)))
             return ResponseHandler.generateResponse("Mine not exists.", HttpStatus.BAD_REQUEST, null);
-        Mine mine = mineRepository.findByName(StringUtils.capitalize(mineRequest.name.toLowerCase(Locale.ROOT)));
+        Mine mine = mineRepository.findByName(mineRequest.name.toLowerCase(Locale.ROOT));
         if (mineRequest.cells != 0 && mineRequest.cells < mine.cells)
             return ResponseHandler.generateResponse("Cells quantity can't be changed to lower one", HttpStatus.BAD_REQUEST, null);
         else {
@@ -125,12 +125,15 @@ public class SecuredMineService {
                 .collect(Collectors.toSet()));
     }
 
-    public ResponseEntity<Object> getMinesImage(String trapImage) {
+    public ResponseEntity<Object> getMinesImage(String mineName) {
+        Mine mine = mineRepository.findByName(mineName.toLowerCase(Locale.ROOT));
         ByteArrayResource inputStream;
         try {
-            inputStream = new ByteArrayResource(Files.readAllBytes(Paths.get(String.format("./images/traps/%s", trapImage))));
+            System.out.printf("%s%s%n", directory, mine.image);
+            inputStream = new ByteArrayResource(Files.readAllBytes(Paths.get(String.format("%s%s", directory, mine.image))));
         } catch (Exception e) {
-            return ResponseHandler.generateResponse("Image not exists.", HttpStatus.OK, false);
+            logger.error(e.getMessage());
+            return ResponseHandler.generateResponse("Image not exists.", HttpStatus.BAD_REQUEST, false);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.Locale;
 
-@Document(collection = "rabbitHuntTraps")
+@Document(collection = "oreHuntTraps")
 public class Mine {
     @Id
     public String id;

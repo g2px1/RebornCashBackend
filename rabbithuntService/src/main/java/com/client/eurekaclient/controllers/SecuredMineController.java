@@ -31,7 +31,7 @@ public class SecuredMineController {
 
     @PostMapping("/editMine")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Object> closeTrap(@ModelAttribute MineRequest mineRequest) {
+    public ResponseEntity<Object> editMine(@ModelAttribute MineRequest mineRequest) {
         return securedMineService.editMine(mineRequest);
     }
 
@@ -47,12 +47,12 @@ public class SecuredMineController {
         return securedMineService.loadMines(pageNumber);
     }
 
-    @GetMapping("/getMinesImage/{mineImage}")
-    public ResponseEntity<Object> getMinesImage(@PathVariable String mineImage) {
-        return securedMineService.getMinesImage(mineImage);
+    @GetMapping("/getMinesImage/{mineName}")
+    public ResponseEntity<Object> getMinesImage(@PathVariable String mineName) {
+        return securedMineService.getMinesImage(mineName);
     }
 
-    @PostMapping("/getMinesImages/")
+    @PostMapping("/getMinesImages")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> getMinesImages() {
         return securedMineService.loadMinesImages();

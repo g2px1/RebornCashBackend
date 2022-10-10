@@ -114,11 +114,6 @@ public class TokensConverter {
                 fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(ErrorMessage.LOW_NATIVE_TOKENS_BALANCE, HttpStatus.OK, null);
             }
-            Optional<JSONArray> optionalGameData = BenSwapRequest.getGameData();
-            if (optionalGameData.isEmpty()) {
-                fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.API_NOT_AVAILABLE, HttpStatus.OK, null);
-            }
 
             double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
             double bnbAmount = tokensQuantityToUSD * (1/ BinanceRequest.getBNBUSDtPrice());

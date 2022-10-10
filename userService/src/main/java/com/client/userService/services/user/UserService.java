@@ -1,6 +1,6 @@
 package com.client.userService.services.user;
 
-import com.client.userService.errors.messages.ErrorMessage;
+import com.client.userService.messages.ErrorMessage;
 import com.client.userService.models.request.UserSeekingRequest;
 import com.client.userService.models.response.ResponseHandler;
 import com.client.userService.models.DTO.users.ERole;
@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +35,12 @@ public class UserService {
     public Optional<User> getUser(String name) {
         return usersRepository.findFirstByUsername(name);
     }
+    public Boolean createUser(User requestUser) {
+        requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
+        usersRepository.save(requestUser);
+        return true;
+    }
     public Boolean saveUser(User requestUser) {
-        if (!requestUser.getRoles().get(0).getName().name().equalsIgnoreCase("admin")) {
-            requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
-            usersRepository.save(requestUser);
-            return true;
-        }
         usersRepository.save(requestUser);
         return true;
     }
@@ -84,5 +85,22 @@ public class UserService {
         Pageable paging = PageRequest.of(userSeekingRequest.page, 10);
         Page<User> page = usersRepository.findAllByStatus(userSeekingRequest.status, paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(UserResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
+    }
+
+    public ResponseEntity<Object> getCode(String username) {
+        User user = usersRepository.findFirstByUsername(username).get();
+        if (user.getStatus().equalsIgnoreCase("banned")) return ResponseHandler.generateResponse(ErrorMessage.USER_BANNED, HttpStatus.BAD_REQUEST, null);
+        return ResponseHandler.generateResponse("", HttpStatus.OK, new ConcurrentHashMap<>(Map.of("qrLink", TimeBasedOneTimePasswordUtil.qrImageUrl(String.format("Reborn.Cash(username: %s)", user.getUsername()), user.getSecretKey()))));
+    }
+
+    public ResponseEntity<Object> set2FA(String username) {
+        User user = usersRepository.findFirstByUsername(username).get();
+        if (user.isTwoFA()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
+        }
+        user.setTwoFA(true);
+        user.setSecretKey(TimeBasedOneTimePasswordUtil.generateBase32Secret());
+        usersRepository.save(user);
+        return ResponseHandler.generateResponse("", HttpStatus.OK, new ConcurrentHashMap<>(Map.of("qrLink", TimeBasedOneTimePasswordUtil.qrImageUrl(String.format("Reborn.Cash(username: %s)", user.getUsername()), user.getSecretKey()), "secretKey", user.getSecretKey())));
     }
 }

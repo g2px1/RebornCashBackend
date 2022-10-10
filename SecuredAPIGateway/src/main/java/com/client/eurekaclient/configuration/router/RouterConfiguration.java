@@ -240,7 +240,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/closeMine")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -252,7 +252,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/editMine")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -264,7 +264,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/loadMine")// returns one trap
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -276,7 +276,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/loadMines") // returns many traps
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -288,7 +288,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/getMinesImage/**")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -300,7 +300,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedMineService/getMinesImages")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -312,7 +312,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedTxService/createToken")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -324,7 +324,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedTxService/loadTokens")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -336,7 +336,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedTxService/balanceOf/**")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -348,7 +348,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .route(p -> p
                         .path("/api/oreHunt/securedTxService/distributeToken")
                         .filters(f -> f.filter((exchange, chain) -> {
@@ -360,7 +360,7 @@ public class RouterConfiguration {
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
-                        .uri("lb://oreChainService/"))
+                        .uri("lb://oreHuntService/"))
                 .build();
     }
 }

@@ -33,7 +33,7 @@ public class SecuredTxController {
         return securedTxService.balanceOf(address);
     }
 
-    @PostMapping("/distributeToken/")
+    @PostMapping("/distributeToken")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> distributeToken(@RequestBody TransferTokensRequests transferTokensRequests) {
         return securedTxService.distributeToken(transferTokensRequests);

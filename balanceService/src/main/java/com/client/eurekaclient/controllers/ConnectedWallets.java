@@ -29,7 +29,7 @@ public class ConnectedWallets {
     public Optional<ConnectedWallet> findByAddress(@PathVariable String address) {
         return connectedWalletsRepository.findByAddress(address);
     }
-    @PostMapping("/connectedWallet")
+    @PostMapping("/connectWallet")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> connectedWallet(@RequestBody ConnectWalletRequest connectWalletRequest, Authentication authentication) {
         return walletService.connectWallet(connectWalletRequest.message, connectWalletRequest.requestedAddress, connectWalletRequest.chainName, authentication.getName());

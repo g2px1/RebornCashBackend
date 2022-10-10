@@ -208,7 +208,31 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/user/balance/(?<username>.*)", "/userService/balance/getBalance/${username}");
+                                    String newPath = path.replaceAll("/api/user/balance/(?<username>.*)", "/userService/userdata/getBalance/${username}");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://userService/"))
+                .route(p -> p
+                        .path("/api/user/getQrCode")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/user/getQrCode", "/userService/userdata/getCode/");
+                                    ServerHttpRequest request = req.mutate().path(newPath).build();
+                                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                                    return chain.filter(exchange.mutate().request(request).build());
+                                }))
+                        .uri("lb://userService/"))
+                .route(p -> p
+                        .path("/api/user/set2FA")
+                        .filters(f -> f.filter((exchange, chain) -> {
+                                    ServerHttpRequest req = exchange.getRequest();
+                                    addOriginalRequestUrl(exchange, req.getURI());
+                                    String path = req.getURI().getRawPath();
+                                    String newPath = path.replaceAll("/api/user/set2FA", "/userService/userdata/set2FA/");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -249,7 +273,7 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/web3/connectMetamask", "/connectedWalletsService/connectedWallet");
+                                    String newPath = path.replaceAll("/api/web3/connectMetamask", "/connectedWalletsService/connectWallet");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
