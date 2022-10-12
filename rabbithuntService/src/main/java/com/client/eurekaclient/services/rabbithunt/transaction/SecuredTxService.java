@@ -60,7 +60,6 @@ public class SecuredTxService {
         Optional<String> balance = Arrays.stream(merchantBalance.getJSONObject("balance").get("tokens_balance").toString().replaceAll("[\\[\\]]", "").split(",")).filter(value -> value.replaceAll("[\\{\\}]", "").split(":")[0].replaceAll("[\"]", "").equals(transferTokensRequests.tokenName)).findAny();
         if(balance.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         BigDecimal amount = new BigDecimal(balance.get().split(":")[1].replace("}", ""));
-        System.out.println(222);
         if(amount.compareTo(BigDecimal.valueOf(transferTokensRequests.amount)) < 0) return ResponseHandler.generateResponse(ErrorMessage.LOW_TOKEN_BALANCE, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, unitService.sendTokens(new TransferTokensRequests(transferTokensRequests.recipient, "merchant", transferTokensRequests.amount, transferTokensRequests.tokenName)).toMap());
     }

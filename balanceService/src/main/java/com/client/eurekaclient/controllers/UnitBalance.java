@@ -35,8 +35,8 @@ public class UnitBalance {
     public JSONObject txPool() {
         return unitService.getTxPool();
     }
-    @PostMapping("/getBalance/{address}")
+    @GetMapping("/getBalance/{address}")
     public Optional<JSONObject> getBalance(@PathVariable String address) {
-        return unitService.getBalance(address);
+        return Optional.ofNullable(unitService.getBalance(address));
     }
 }

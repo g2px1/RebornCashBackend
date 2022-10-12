@@ -3,12 +3,15 @@ package com.client.eurekaclient.services.unit;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.utilities.unit.Unit;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class UnitService {
+    private static final Logger logger = LoggerFactory.getLogger(UnitService.class);
     public String errorContainer = """
                         {"error": "%s"}
                     """;
@@ -46,11 +49,12 @@ public class UnitService {
             return new JSONObject(String.format("error occurred: not found"));
         }
     }
-    public Optional<JSONObject> getBalance(String address) {
+    public JSONObject getBalance(String address) {
         try {
-            return Optional.of(Unit.getBalance(address));
+            return Unit.getBalance(address);
         } catch (Exception e) {
-            return Optional.empty();
+            logger.error(e.getMessage());
+            return new JSONObject();
         }
     }
     public JSONObject getBlockHeight() {

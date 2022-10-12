@@ -42,7 +42,7 @@ public class FairLock {
         return Optional.of(cellsLock);
     }
 
-    public boolean unlockUserLock(String username) {
+    public long unlockUserLock(String username) {
         return userLockRepository.deleteByUsername(username);
     }
     public boolean unlockCellsLock(String uuid) {

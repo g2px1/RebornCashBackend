@@ -23,10 +23,9 @@ import com.client.eurekaclient.services.openfeign.wallets.BalanceInterface;
 import com.client.eurekaclient.services.openfeign.wallets.ConnectedWalletInterface;
 import com.client.eurekaclient.services.rabbithunt.transaction.ScheduledTxService;
 import com.client.eurekaclient.services.rabbithunt.mine.UserMineService;
-import com.client.eurekaclient.utilities.http.finance.BenSwapRequest;
+import com.client.eurekaclient.services.unit.UnitService;
 import com.client.eurekaclient.utilities.http.finance.BinanceRequest;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,8 @@ public class TokensConverter {
     private UserInterface userInterface;
     @Autowired
     private UnitInterface unitInterface;
+    @Autowired
+    private UnitService unitService;
     @Autowired
     private NFTInterface nftInterface;
     @Autowired
@@ -81,7 +82,7 @@ public class TokensConverter {
                 fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
-            Optional<JSONObject> optionalBalance = balanceInterface.getBalance(nft.name);
+            Optional<JSONObject> optionalBalance = Optional.ofNullable(unitService.getBalance(nft.name));
             if (optionalBalance.isEmpty()) {
                 fairLock.unlockUserLock(username);
                 return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
@@ -118,7 +119,7 @@ public class TokensConverter {
             double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
             double bnbAmount = tokensQuantityToUSD * (1/ BinanceRequest.getBNBUSDtPrice());
 
-            JSONObject unitResponse = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, convertingTokenRequest.tokenAmount, convertingTokenRequest.tokenName));
+            JSONObject unitResponse = unitService.sendTokens(new TransferTokensRequests("merchant", nft.name, convertingTokenRequest.tokenAmount, convertingTokenRequest.tokenName));
 
             TransactionResult transactionResult = balanceInterface.sendNativeTokenTransaction(new TransactionRequest(convertingTokenRequest.chainName, username, bnbAmount));
             if (transactionResult.error) {
@@ -181,13 +182,13 @@ public class TokensConverter {
         Optional<List<ScheduledTransaction>> optionalScheduledTransactionList = scheduledTransactionRepository.findByNftNameAndActiveTillLessThanAndReverted(nft.name, new Date().getTime(), false);
         optionalScheduledTransactionList.ifPresent(layer1ExpiringTransactionsList -> { // check if list !empty
             layer1ExpiringTransactionsList.forEach(scheduledTransaction -> { // looking for all Transactions and their amounts
-                unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, scheduledTransaction.amount, scheduledTransaction.tokenName));
+                unitService.sendTokens(new TransferTokensRequests("merchant", nft.name, scheduledTransaction.amount, scheduledTransaction.tokenName));
                 scheduledTransaction.setReverted(true); // setting status of transaction
             });
             scheduledTransactionRepository.saveAll(optionalScheduledTransactionList.get()); // saving changes if exists
         });
 
-        Optional<JSONObject> optionalJsonBalance = balanceInterface.getBalance(nft.name);
+        Optional<JSONObject> optionalJsonBalance = Optional.ofNullable(unitService.getBalance(nft.name));
         if (optionalJsonBalance.isEmpty()) {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
@@ -203,8 +204,8 @@ public class TokensConverter {
             return ResponseHandler.generateResponse(ErrorMessage.LOW_GOLD_COINS_BALANCE, HttpStatus.OK, null);
         }
 
-        JSONObject goldCoin = unitInterface.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "gold_coin"));
-        JSONObject inIngot = unitInterface.sendTokens(new TransferTokensRequests(nft.name, "merchant", investmentInBurgerRequest.quantityOfBurgers, "gold_ingot"));
+        JSONObject goldCoin = unitService.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "gold_coin"));
+        JSONObject inIngot = unitService.sendTokens(new TransferTokensRequests(nft.name, "merchant", investmentInBurgerRequest.quantityOfBurgers, "gold_ingot"));
         user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(10)));
         userInterface.saveUser(user);
         scheduledTxService.subtractTxByNft(nft.name, investmentInBurgerRequest.quantityOfBurgers * 10);

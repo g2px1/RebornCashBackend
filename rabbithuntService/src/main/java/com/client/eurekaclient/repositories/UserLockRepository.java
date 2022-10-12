@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserLockRepository extends MongoRepository<UserLock, String> {
     Optional<UserLock> findByUsername(String username);
-    boolean deleteByUsername(String username);
+    long deleteByUsername(String username);
 }

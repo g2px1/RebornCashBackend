@@ -13,6 +13,7 @@ import com.client.eurekaclient.repositories.ConnectedWalletsRepository;
 import com.client.eurekaclient.repositories.TransactionsRepository;
 import com.client.eurekaclient.services.lock.FairLock;
 import com.client.eurekaclient.services.openfeign.users.UserInterface;
+import com.client.eurekaclient.services.web3.contracts.OreChainContractProvider;
 import com.client.eurekaclient.services.web3.contracts.StandardContractProvider;
 import com.client.eurekaclient.services.web3.gas.GasProvider;
 import com.client.eurekaclient.utilities.password.generator.RandomPasswordGenerator;
@@ -180,11 +181,11 @@ public class Web3Service {
         Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
         if (blockchainDataOptional.isEmpty()) return false;
         BlockchainData blockchainData = blockchainDataOptional.get();
-        StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.getPrivateKey());
+        OreChainContractProvider oreChainContractProvider = new OreChainContractProvider(blockchainData.url, blockchainData.getPrivateKey());
         try {
             Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletsRepository.findByUsername(username);
             if (optionalConnectedWallet.isEmpty()) return false;
-            return standardContractProvider.getERC721Token(blockchainData.nftContractAddress).ownerOf(BigInteger.valueOf(nftIndex)).send().equalsIgnoreCase(optionalConnectedWallet.get().getAddress());
+            return oreChainContractProvider.getERC721Token(blockchainData.nftContractAddress).ownerOf(BigInteger.valueOf(nftIndex)).send().equalsIgnoreCase(optionalConnectedWallet.get().getAddress());
         } catch (Exception e) {
             logger.error(e.getMessage());
             return false;

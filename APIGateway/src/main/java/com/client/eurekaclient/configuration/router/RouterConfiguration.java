@@ -415,12 +415,12 @@ public class RouterConfiguration {
                                 }))
                         .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/orehunt/mines/loadMines/")
+                        .path("/api/orehunt/mines/loadMines")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMines/", "/oreHuntService/mines/loadMines/");
+                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMines", "/oreChainService/mines/loadMines");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
@@ -432,31 +432,31 @@ public class RouterConfiguration {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMinesImage/(?<mineImage>.*)", "/oreHuntService/mines/getMinesImage/${mineImage}");
+                                    String newPath = path.replaceAll("/api/orehunt/mines/loadMinesImage/(?<mineImage>.*)", "/oreChainService/mines/getMinesImage/${mineImage}");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/orehunt/mines/buyMineCells/")
+                        .path("/api/orehunt/mines/buyMineCells")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/orehunt/mines/buyMineCells/", "/oreHuntService/mines/buyMineCells/");
+                                    String newPath = path.replaceAll("/api/orehunt/mines/buyMineCells", "/oreChainService/mines/buyMineCells/");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
                                 }))
                         .uri("lb://oreHuntService/"))
                 .route(p -> p
-                        .path("/api/orehunt/coins/buyCoins/")
+                        .path("/api/orehunt/coins/buyCoins")
                         .filters(f -> f.filter((exchange, chain) -> {
                                     ServerHttpRequest req = exchange.getRequest();
                                     addOriginalRequestUrl(exchange, req.getURI());
                                     String path = req.getURI().getRawPath();
-                                    String newPath = path.replaceAll("/api/orehunt/coins/buyCoins/", "/oreHuntService/coins/buyCoinsFromMerchant/");
+                                    String newPath = path.replaceAll("/api/orehunt/coins/buyCoins", "/oreChainService/coins/buyCoinsFromMerchant/");
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
