@@ -19,6 +19,13 @@ public class CellsTransactions {
     public String outHash;
     public String inHash;
 
+    public CellsTransactions() {
+    }
+
+    public void setMine(Mine mine) {
+        this.mine = mine;
+    }
+
     public CellsTransactions(Mine mine, String nftName, int quantity) {
         this.mine = mine;
         this.nftName = nftName;

@@ -1,6 +1,6 @@
 package com.client.userService.controllers;
 
-import com.client.userService.messages.ErrorMessage;
+import com.client.userService.errors.messages.Errors;
 import com.client.userService.models.DTO.users.User;
 import com.client.userService.models.response.ResponseHandler;
 import com.client.userService.services.user.UserService;
@@ -19,12 +19,14 @@ import java.util.Optional;
 public class BalanceController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private Errors errors;
 
     @GetMapping("/getBalance/{username}")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> getBalance(@PathVariable String username) {
         Optional<User> optionalUser = userService.getUser(username);
-        if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(errors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, optionalUser.get().getBalance());
     }
 

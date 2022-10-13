@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.authorization.filters;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.JWT.JWS;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.services.authorization.UserDetailsServiceImplementation;
@@ -41,6 +41,8 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private VerifyInterface verifyInterface;
     @Autowired
     private KeyInterface keyInterface;
+    @Autowired
+    private Errors errors;
     private JWS jws = new JWS(null);
 
     @Override
@@ -53,10 +55,10 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 String username = jwtUtility.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 Optional<User> optionalUser = userDetailsService.loadUser(username);
-                if (optionalUser.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_NOT_FOUND);
+                if (optionalUser.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.USER_NOT_FOUND);
                 User user = optionalUser.get();
-                if (user.getStatus().equalsIgnoreCase("banned")) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_BANNED);
-                if (user.isTwoFA() && verifyInterface.isExistVerify(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.NEED_TO_PASS_2FA);
+                if (user.getStatus().equalsIgnoreCase("banned")) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.USER_BANNED);
+                if (user.isTwoFA() && verifyInterface.isExistVerify(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.NEED_TO_PASS_2FA);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 Date exp = Date.from(LocalDateTime.now().plusMinutes(30)

@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface CellsTransactionRepository extends MongoRepository<CellsTransactions, String> {
     Optional<List<CellsTransactions>> findByTrapAndNftName(Mine mine, String nftName);
-    Optional<List<CellsTransactions>> findByTrap(Mine mine);
+    Optional<List<CellsTransactions>> findByMine(Mine mine);
 }

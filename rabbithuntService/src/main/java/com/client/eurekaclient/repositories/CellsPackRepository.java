@@ -11,5 +11,5 @@ public interface CellsPackRepository extends MongoRepository<CellsPack, String> 
     Optional<CellsPack> findByTrapAndNftName(Mine mine, String sellerName);
     Optional<CellsPack> findByIndex(long index);
     Optional<CellsPack> findFirstByIndexAndNftNameAndStatus(long index, String sellerName, String status);
-    List<CellsPack> findByTrap(Mine mine);
+    List<CellsPack> findByMine(Mine mine);
 }

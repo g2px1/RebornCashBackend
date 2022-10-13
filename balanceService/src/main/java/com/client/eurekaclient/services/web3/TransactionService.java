@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.web3;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.web3.BlockchainData;
@@ -32,6 +32,8 @@ public class TransactionService {
     private BlockchainsRepository blockchainsRepository;
     @Autowired
     private UserInterface userInterface;
+    @Autowired
+    private Errors errors;
 
     public ResponseEntity<Object> getUserTransaction(String username, String chain, int pageNumber) {
         Pageable paging = PageRequest.of(pageNumber, 10);
@@ -42,7 +44,7 @@ public class TransactionService {
     public ResponseEntity<Object> saveTransaction(String username, String chainName, String hash) {
         if (transactionsRepository.existsByHashAndChainName(hash, chainName)) return ResponseHandler.generateResponse("transaction already exists.", HttpStatus.BAD_REQUEST, false);
         Optional<BlockchainData> optionalBlockchainData = blockchainsRepository.findByName(chainName);
-        if (optionalBlockchainData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, false);
+        if (optionalBlockchainData.isEmpty()) return ResponseHandler.generateResponse(errors.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, false);
         BlockchainData blockchainData = optionalBlockchainData.get();
         StandardContractProvider standardContractProvider = new StandardContractProvider(blockchainData.url, blockchainData.privateKey);
         Optional<org.web3j.protocol.core.methods.response.Transaction> transaction;
@@ -54,8 +56,8 @@ public class TransactionService {
             return ResponseHandler.generateResponse("error occurred: cannot send request to WEB3 network", HttpStatus.BAD_REQUEST, false);
         }
         Optional<User> optionalUser = userInterface.getUser(username);
-        if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, false);
-        if(!transaction.get().getTo().equalsIgnoreCase(blockchainData.hotWalletAddress)) return ResponseHandler.generateResponse(ErrorMessage.INVALID_RECIPIENT, HttpStatus.BAD_REQUEST, false);
+        if(optionalUser.isEmpty()) return ResponseHandler.generateResponse(errors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, false);
+        if(!transaction.get().getTo().equalsIgnoreCase(blockchainData.hotWalletAddress)) return ResponseHandler.generateResponse(errors.INVALID_RECIPIENT, HttpStatus.BAD_REQUEST, false);
         User user = optionalUser.get();
         BigDecimal amount = new BigDecimal(new BigInteger(transaction.get().getInput().substring(74), 16)).divide(BigDecimal.valueOf(Math.pow(10, 18)));
         user.setBalance(user.getBalance().add(amount));

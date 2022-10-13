@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @FeignClient(name = "marketplaceService")
 public interface MarketInterface {
-    @PostMapping("/save")
+    @PostMapping("/marketController/save")
     <T extends AbstractProduct> ResponseEntity<Object> save(@RequestBody T abstractProduct);
-    @PostMapping("/findAbstractByUuid")
+    @PostMapping("/marketController/findAbstractByUuid")
     <T extends AbstractProduct> Optional<T> findAbstractByUuidAndStatus(@RequestBody ProductSeekingRequest productSeekingRequest);
 }

@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.web3;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.nft.NFT;
 import com.client.eurekaclient.models.request.web3.NFTSeekingRequest;
@@ -33,6 +33,8 @@ public class WalletService {
     private NFTInterface nftInterface;
     @Autowired
     private BlockchainsRepository blockchainsRepository;
+    @Autowired
+    private Errors errors;
 
     public ResponseEntity<Object> connectWallet(String message, String requestedAddress, String chainName, String username) {
         User user = userInterface.getUser(username).get();
@@ -46,7 +48,7 @@ public class WalletService {
                 connectedWalletsRepository.save(connectedWallet);
 
                 Optional<BlockchainData> optionalBlockchainData = blockchainsRepository.findByName(chainName);
-                if (optionalBlockchainData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, null);
+                if (optionalBlockchainData.isEmpty()) return ResponseHandler.generateResponse(errors.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, null);
                 BlockchainData blockchainData = optionalBlockchainData.get();
 
                 Runnable activateNft = () -> {
@@ -66,7 +68,7 @@ public class WalletService {
                             }
                         });
                     } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.DEFAULT_ERROR);
                     }
                     nftInterface.saveAll(nftListToBeUpdated);
                 };
@@ -77,10 +79,10 @@ public class WalletService {
 
                 return ResponseHandler.generateResponse(null, HttpStatus.OK, true);
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.METAMASK_ERROR);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.METAMASK_ERROR);
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.METAMASK_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.METAMASK_ERROR);
         }
     }
 }

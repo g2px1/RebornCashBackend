@@ -1,6 +1,6 @@
 package com.client.authorizationService.services.authorization;
 
-import com.client.authorizationService.errors.messages.ErrorMessage;
+import com.client.authorizationService.errors.messages.Errors;
 import com.client.authorizationService.models.DTO.authorization.AuthorizationDTO;
 import com.client.authorizationService.models.DTO.response.ResponseHandler;
 import com.client.authorizationService.models.JWT.JWS;
@@ -51,6 +51,8 @@ public class AuthorizationService {
     @Autowired
     private volatile JWS jws;
     @Autowired
+    private Errors errors;
+    @Autowired
     private JWTUtility jwtUtility;
     private final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
 
@@ -63,10 +65,10 @@ public class AuthorizationService {
         try {
             optionalUser = userInterface.getUser(authorizationDTO.username);
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (optionalUser.isEmpty())
-            return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         User user = optionalUser.get();
         if (user.isTwoFA()) verifyInterface.setVerify(new VerifyDTO(user.getUsername(), false));
         else user.setNonce(Rnd.get(Integer.MAX_VALUE));
@@ -76,7 +78,7 @@ public class AuthorizationService {
 
     public ResponseEntity<Object> registerUser(AuthorizationDTO authorizationDTO) {
         if (userInterface.isExistsByAll(authorizationDTO.username, authorizationDTO.email))
-            return ResponseHandler.generateResponse(ErrorMessage.USER_EXISTS, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.USER_EXISTS, HttpStatus.BAD_REQUEST, null);
         User user = new User(authorizationDTO.username.trim(), authorizationDTO.email.trim(), encoder.encode(authorizationDTO.password.trim()), new ArrayList<>(List.of(new Role(ERole.ROLE_USER))), TimeBasedOneTimePasswordUtil.generateBase32Secret());
         userInterface.registerUser(user);
         Authentication authentication = authenticationManager.authenticate(
@@ -88,18 +90,18 @@ public class AuthorizationService {
 
     public ResponseEntity<Object> resetPassword(AuthorizationDTO authorizationDTO) {
         if (!userInterface.changePasswordIfExists(authorizationDTO.username, encoder.encode(authorizationDTO.password), authorizationDTO.code))
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, true);
     }
 
     public ResponseEntity<Object> approveVerifyCode(String username, String code) {
         Optional<User> user = userInterface.getUser(username);
-        if (user.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        if (user.isEmpty()) return ResponseHandler.generateResponse(errors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         try {
-            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.get().getSecretKey(), Integer.parseInt(code), 0)) return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.BAD_REQUEST, null);
+            if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.get().getSecretKey(), Integer.parseInt(code), 0)) return ResponseHandler.generateResponse(errors.INVALID_CODE, HttpStatus.BAD_REQUEST, null);
         } catch (GeneralSecurityException e) {
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         verifyInterface.deleteVerify(new VerifyDTO(username, true));
         return ResponseHandler.generateResponse(null, HttpStatus.OK, null);

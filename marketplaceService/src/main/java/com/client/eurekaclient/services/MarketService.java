@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.market.AbstractProduct;
 import com.client.eurekaclient.models.request.ProductSeekingRequest;
 import com.client.eurekaclient.models.response.ResponseHandler;
@@ -21,6 +21,8 @@ import java.util.Optional;
 public class MarketService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private Errors errors;
 
     public ResponseEntity<Object> findPage(ProductSeekingRequest productSeekingRequest) {
         Sort.Direction direction = (productSeekingRequest.direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -48,7 +50,7 @@ public class MarketService {
     public ResponseEntity<Object> findByUUid(ProductSeekingRequest productSeekingRequest) {
         Optional<AbstractProduct> optionalAbstractProduct = productRepository.findByUuid(productSeekingRequest.uuid);
         if (optionalAbstractProduct.isEmpty())
-            return ResponseHandler.generateResponse(ErrorMessage.PRODUCT_NOT_FOUND, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.PRODUCT_NOT_FOUND, HttpStatus.OK, null);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, optionalAbstractProduct.get());
     }
     public Optional<AbstractProduct> findAbstractByUUid(ProductSeekingRequest productSeekingRequest) {

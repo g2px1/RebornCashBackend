@@ -4,10 +4,13 @@ package com.client.eurekaclient.services.unit;
 import com.client.eurekaclient.models.request.unit.TransferTokensRequests;
 import com.client.eurekaclient.utilities.unit.Unit;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UnitService {
+    private final Logger logger = LoggerFactory.getLogger(UnitService.class);
     public JSONObject sendTokens(TransferTokensRequests transferTokensRequests) {
         try {
             if (transferTokensRequests.sender.equals("merchant")) {
@@ -20,6 +23,7 @@ public class UnitService {
                         {"error": "invalid transaction"}
                     """);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return new JSONObject("""
                         {"error": "error occurred"}
                     """);
@@ -36,11 +40,9 @@ public class UnitService {
     }
     public JSONObject createToken(String bytecode) {
         try {
-            JSONObject jsonObject = Unit.createTokenTransaction(bytecode);
-            System.out.println(jsonObject);
-            return jsonObject;
+            return Unit.createTokenTransaction(bytecode);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
             return new JSONObject("""
                         {"error": "error occurred"}
                     """);

@@ -1,7 +1,7 @@
 package com.client.eurekaclient.services.rabbithunt.mine;
 
 import com.client.eurekaclient.constants.Constants;
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.goldenrush.cells.CellsPack;
 import com.client.eurekaclient.models.goldenrush.mine.Mine;
 import com.client.eurekaclient.models.goldenrush.tokens.Token;
@@ -13,6 +13,7 @@ import com.client.eurekaclient.models.response.ResponseHandler;
 import com.client.eurekaclient.models.scheduled.transactions.ScheduledTransaction;
 import com.client.eurekaclient.repositories.*;
 import com.client.eurekaclient.services.openfeign.transactions.unit.UnitInterface;
+import com.client.eurekaclient.services.unit.UnitService;
 import com.client.eurekaclient.utilities.upload.StorageService;
 import com.client.eurekaclient.utilities.http.finance.YahooFinanceRequest;
 import com.client.eurekaclient.utilities.http.PostRequest;
@@ -54,7 +55,11 @@ public class SecuredMineService {
     @Autowired
     private UnitInterface unitInterface;
     @Autowired
+    private Errors errors;
+    @Autowired
     private MineRepository mineRepository;
+    @Autowired
+    private UnitService unitService;
     @Value("${file.upload-dir}")
     private String directory;
     private final StorageService storageService;
@@ -74,10 +79,10 @@ public class SecuredMineService {
             return ResponseHandler.generateResponse("Token doesn't exist in UNIT.", HttpStatus.BAD_REQUEST, null);
         try {
             if (mineRequest.checkNull())
-                return ResponseHandler.generateResponse(ErrorMessage.ALL_FIELDS_SHOULD_BE_FILLED_IN, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.ALL_FIELDS_SHOULD_BE_FILLED_IN, HttpStatus.BAD_REQUEST, null);
         } catch (IllegalAccessException e) {
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (mineRepository.existsByName(mineRequest.name.toLowerCase(Locale.ROOT).trim()))
             return ResponseHandler.generateResponse("Mine exists.", HttpStatus.BAD_REQUEST, null);
@@ -149,20 +154,20 @@ public class SecuredMineService {
 
     public ResponseEntity<Object> closeMine(CloseMineRequest closeMineRequest) {
         if (!mineRepository.existsByName(closeMineRequest.mineName))
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.OK, false);
+            return ResponseHandler.generateResponse(errors.MINE_NOT_EXIST, HttpStatus.BAD_REQUEST, false);
         Mine mine = mineRepository.findByName(closeMineRequest.mineName);
-        if (!mine.status) return ResponseHandler.generateResponse(ErrorMessage.TRAP_CLOSED, HttpStatus.OK, false);
+        if (!mine.status) return ResponseHandler.generateResponse(errors.MINE_CLOSED, HttpStatus.BAD_REQUEST, false);
         try {
             if (closeMineRequest.price != null) mine.setTokenPerCell(Double.parseDouble(closeMineRequest.price) / mine.cells);
             else mine.setTokenPerCell(YahooFinanceRequest.getOptionOptionalRegularMarketPrice(mine.optionName) * 100 / mine.cells);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-        Optional<List<CellsTransactions>> optionalTrapsCellsTransactionsList = cellsTransactionRepository.findByTrap(mine);
+        Optional<List<CellsTransactions>> optionalTrapsCellsTransactionsList = cellsTransactionRepository.findByMine(mine);
         if (optionalTrapsCellsTransactionsList.isEmpty()) {
             mine.setStatus(false);
             mineRepository.save(mine);
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_IS_FULL, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.MINE_IS_FULL, HttpStatus.BAD_REQUEST, null);
         }
 
         Runnable firstHalf = (() -> {
@@ -170,7 +175,8 @@ public class SecuredMineService {
             List<CellsTransactions> cellsTransactions = optionalTrapsCellsTransactionsList.get();
             for (int i = 0; i < cellsTransactions.size(); i++) {
                 double amountToTransfer = mine.tokenPerCell * cellsTransactions.get(i).quantity;
-                JSONObject tokenDistribution = unitInterface.sendTokens(new TransferTokensRequests(cellsTransactions.get(i).nftName, "merchant", amountToTransfer, mine.tokenName));
+                JSONObject tokenDistribution = unitService.sendTokens(new TransferTokensRequests(cellsTransactions.get(i).nftName, "merchant", amountToTransfer, mine.tokenName));
+                if(tokenDistribution.has("error")) return;
                 scheduledTransactionArrayList.add(new ScheduledTransaction(Instant.now().plusMillis(Constants.FIVE_DAYS_MS).toEpochMilli(), tokenDistribution.getString("hash"), cellsTransactions.get(i).nftName, amountToTransfer, mine.tokenName, false));
                 try {
                     TimeUnit.SECONDS.sleep(3);
@@ -180,9 +186,9 @@ public class SecuredMineService {
             }
             scheduledTransactionRepository.saveAll(scheduledTransactionArrayList);
             List<CellsPack> cellsPackList = new ArrayList<>();
-            cellsPackRepository.findByTrap(mine).forEach(cellsPack -> {
+            cellsPackRepository.findByMine(mine).forEach(cellsPack -> {
                 double amountToTransfer = mine.tokenPerCell * cellsPack.quantity.doubleValue();
-                unitInterface.sendTokens(new TransferTokensRequests());
+                unitService.sendTokens(new TransferTokensRequests());
                 Optional<JSONObject> tokenDistribution = PostRequest.sendFromMerchantTokensOptional(cellsPack.nftName, amountToTransfer, mine.tokenName);
                 tokenDistribution = PostRequest.sendFromMerchantTokensOptional(cellsPack.nftName, amountToTransfer, mine.tokenName);
                 scheduledTransactionArrayList.add(new ScheduledTransaction(new Date().getTime() + Constants.FIVE_DAYS_MS, tokenDistribution.get().getString("hash"), cellsPack.nftName, amountToTransfer, mine.tokenName, false));

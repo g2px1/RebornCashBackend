@@ -1,6 +1,6 @@
 package com.client.userService.services.user;
 
-import com.client.userService.messages.ErrorMessage;
+import com.client.userService.errors.messages.Errors;
 import com.client.userService.models.request.UserSeekingRequest;
 import com.client.userService.models.response.ResponseHandler;
 import com.client.userService.models.DTO.users.ERole;
@@ -31,6 +31,8 @@ public class UserService {
     private UsersRepository usersRepository;
     @Autowired
     private RolesRepository rolesRepository;
+    @Autowired
+    private Errors errors;
 
     public Optional<User> getUser(String name) {
         return usersRepository.findFirstByUsername(name);
@@ -51,7 +53,7 @@ public class UserService {
     public Boolean registerUser(User requestUser) {
         requestUser.setRoles(List.of(rolesRepository.findByName(ERole.ROLE_USER)));
         if(usersRepository.existsByUsername(requestUser.getUsername()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_EXISTS);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.USER_EXISTS);
         usersRepository.save(requestUser);
         return true;
     }
@@ -89,14 +91,14 @@ public class UserService {
 
     public ResponseEntity<Object> getCode(String username) {
         User user = usersRepository.findFirstByUsername(username).get();
-        if (user.getStatus().equalsIgnoreCase("banned")) return ResponseHandler.generateResponse(ErrorMessage.USER_BANNED, HttpStatus.BAD_REQUEST, null);
+        if (user.getStatus().equalsIgnoreCase("banned")) return ResponseHandler.generateResponse(errors.USER_BANNED, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse("", HttpStatus.OK, new ConcurrentHashMap<>(Map.of("qrLink", TimeBasedOneTimePasswordUtil.qrImageUrl(String.format("Reborn.Cash(username: %s)", user.getUsername()), user.getSecretKey()))));
     }
 
     public ResponseEntity<Object> set2FA(String username) {
         User user = usersRepository.findFirstByUsername(username).get();
         if (user.isTwoFA()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.DEFAULT_ERROR);
         }
         user.setTwoFA(true);
         user.setSecretKey(TimeBasedOneTimePasswordUtil.generateBase32Secret());

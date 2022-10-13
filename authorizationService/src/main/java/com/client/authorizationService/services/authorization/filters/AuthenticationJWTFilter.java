@@ -1,15 +1,12 @@
 package com.client.authorizationService.services.authorization.filters;
 
-import com.client.authorizationService.errors.messages.ErrorMessage;
-import com.client.authorizationService.models.JWT.JWS;
+import com.client.authorizationService.errors.messages.Errors;
 import com.client.authorizationService.services.authorization.UserDetailsServiceImplementation;
 import com.client.authorizationService.models.DTO.users.User;
 import com.client.authorizationService.utilities.JWT.JWTUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,9 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+
 import java.util.Optional;
 
 public class AuthenticationJWTFilter extends OncePerRequestFilter {
@@ -34,6 +29,8 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
     private JWTUtility jwtUtility;
     @Autowired
     private UserDetailsServiceImplementation userDetailsService;
+    @Autowired
+    private Errors errors;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationJWTFilter.class);
 
     @Override
@@ -46,9 +43,9 @@ public class AuthenticationJWTFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 Optional<User> optionalUser = userDetailsService.loadUser(username);
                 if (optionalUser.isEmpty())
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_NOT_FOUND);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.USER_NOT_FOUND);
                 if(optionalUser.get().getStatus().equalsIgnoreCase("banned"))
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.USER_BANNED);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.USER_BANNED);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);

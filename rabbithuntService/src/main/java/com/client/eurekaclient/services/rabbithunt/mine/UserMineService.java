@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.rabbithunt.mine;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
 import com.client.eurekaclient.models.nft.NFT;
@@ -66,10 +66,12 @@ public class UserMineService {
     private ScheduledTxService scheduledTxService;
     @Autowired
     private FairLock fairLock;
+    @Autowired
+    private Errors errors;
     private static final Logger logger = LoggerFactory.getLogger(UserMineService.class);
 
     public ResponseEntity<Object> loadMines(HashMap<String, Integer> pageNumber) {
-        if (!pageNumber.containsKey("page")) return ResponseHandler.generateResponse(ErrorMessage.INVALID_DATA, HttpStatus.OK, null);
+        if (!pageNumber.containsKey("page")) return ResponseHandler.generateResponse(errors.INVALID_DATA, HttpStatus.OK, null);
         Pageable paging = PageRequest.of(pageNumber.get("page"), 5);
         Page<Mine> page = mineRepository.findAllByStatus(true, paging);
         return ResponseHandler.generateResponse(null, HttpStatus.OK, Map.of("content", page.getContent().stream().map(TrapResponse::build).collect(Collectors.toList()), "currentPage", page.getNumber(), "totalItems", page.getTotalElements(), "totalPages", page.getTotalPages()));
@@ -90,82 +92,82 @@ public class UserMineService {
 
     public ResponseEntity<Object> buyCells(BuyCellsRequest buyCellsRequest, String username) {
         Optional<UserLock> userLock = fairLock.getUserFairLock(username);
-        if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.BAD_REQUEST, null);
+        if (userLock.isEmpty()) return ResponseHandler.generateResponse(errors.LOCK, HttpStatus.BAD_REQUEST, null);
         if (!mineRepository.existsByName(buyCellsRequest.trapName)) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.MINE_NOT_EXIST, HttpStatus.BAD_REQUEST, null);
         }
         Optional<User> optionalUser = userInterface.getUser(username);
         if (optionalUser.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         }
         User user = optionalUser.get();
         try {
             if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(buyCellsRequest.code), 0)) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.INVALID_CODE, HttpStatus.BAD_REQUEST, null);
             }
         } catch (GeneralSecurityException e) {
             fairLock.unlockUserLock(username);
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         Mine mine = mineRepository.findByName(buyCellsRequest.trapName);
         if (!mine.status) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_EXPIRED, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.MINE_EXPIRED, HttpStatus.BAD_REQUEST, null);
         }
         Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
         if (optionalConnectedWallet.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(buyCellsRequest.nftIndex));
         if (optionalNFT.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
         }
         NFT nft = optionalNFT.get();
         if (!balanceInterface.isOwnerOfNFT(username, buyCellsRequest.nftIndex, buyCellsRequest.chainName)) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.OWNERSHIP_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.OWNERSHIP_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (buyCellsRequest.quantity == 0) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(String.format(ErrorMessage.INVALID_DATA, "quantity = 0"), HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(String.format(errors.INVALID_DATA, "quantity = 0"), HttpStatus.OK, null);
         }
         Optional<JSONObject> optionalJsonBalance = Optional.ofNullable(unitService.getBalance(nft.name));
         if (optionalJsonBalance.isEmpty() || optionalJsonBalance.get().isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         Optional<Double> optionalInCarrotsBalance = UserMineService.getValueInDouble(optionalJsonBalance.get(), "silver_coin");
         if (optionalInCarrotsBalance.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         double inCarrotsBalance = optionalInCarrotsBalance.get();
 
         if (buyCellsRequest.quantity > mine.cellsAvailable) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_OUT_OF_EMISSION, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.MINE_OUT_OF_EMISSION, HttpStatus.BAD_REQUEST, null);
         }
         Optional<JSONObject> optionalPrice = YahooFinanceRequest.getOptionPrice(mine.optionName);
         if (optionalPrice.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.TRAP_NOT_EXIST, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.MINE_NOT_EXIST, HttpStatus.BAD_REQUEST, null);
         }
         Double optionPrice;
         try {
             optionPrice = YahooFinanceRequest.getOptionOptionalRegularMarketPrice(mine.optionName);
         } catch (Exception e) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (buyCellsRequest.quantity > inCarrotsBalance * 100) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.NOT_ENOUGH_CARROTS, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.NOT_ENOUGH_CARROTS, HttpStatus.BAD_REQUEST, null);
         }
         mine.setCellsAvailable(mine.cellsAvailable - buyCellsRequest.quantity);
         mine.setTokenPerCell((optionPrice / mine.cells));

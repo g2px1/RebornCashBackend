@@ -1,9 +1,10 @@
 package com.client.authorizationService.utilities;
 
-import com.client.authorizationService.errors.messages.ErrorMessage;
+import com.client.authorizationService.errors.messages.Errors;
 import com.client.authorizationService.models.DTO.users.User;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,8 @@ public class CaptchaUtility {
     private String recatpchaUrl;
     @Value("${app.secretKey.recaptcha}")
     private String recaptchaSecretKey;
+    @Autowired
+    private Errors errors;
     @Value("${app.scoresLevel.recaptcha}")
     private BigDecimal scoresLevel;
 
@@ -41,7 +44,7 @@ public class CaptchaUtility {
         try {
             score = new BigDecimal(json.get("score").toString());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorMessage.DEFAULT_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.DEFAULT_ERROR);
         }
         if (json.getBoolean("success"))
             return (score.compareTo(scoresLevel) >= 0);

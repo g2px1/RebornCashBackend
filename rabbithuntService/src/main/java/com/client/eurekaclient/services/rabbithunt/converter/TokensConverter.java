@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.rabbithunt.converter;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.lock.UserLock;
@@ -61,59 +61,61 @@ public class TokensConverter {
     private BlockchainInterface blockchainInterface;
     @Autowired
     private FairLock fairLock;
+    @Autowired
+    private Errors errors;
     private static final Logger logger = LoggerFactory.getLogger(UserMineService.class);
 
     public ResponseEntity<Object> convertLayer1TokensIntoGame(ConvertingTokenRequest convertingTokenRequest, String username) {
         if (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin") || convertingTokenRequest.tokenName.equalsIgnoreCase("gold_coin")) {
             Optional<UserLock> userLock = fairLock.getUserFairLock(username);
-            if(userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
+            if(userLock.isEmpty()) return ResponseHandler.generateResponse(errors.LOCK, HttpStatus.OK, null);
             Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(convertingTokenRequest.nftIndex));
             if (optionalNFT.isEmpty()) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.NFT_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
             }
             Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
             if (optionalConnectedWallet.isEmpty()) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.METAMASK_ERROR, HttpStatus.BAD_REQUEST, null);
             }
             NFT nft = optionalNFT.get();
             if (balanceInterface.isOwnerOfNFT(username, nft.index, convertingTokenRequest.chainName)) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
             Optional<JSONObject> optionalBalance = Optional.ofNullable(unitService.getBalance(nft.name));
             if (optionalBalance.isEmpty()) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
             }
             Optional<Double> balance = getValueInDouble(optionalBalance.get(), nft.name);
             if (balance.isEmpty()) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.BALANCE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
             }
             if (balance.get() < convertingTokenRequest.tokenAmount) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.LOW_TOKEN_BALANCE, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.LOW_TOKEN_BALANCE, HttpStatus.BAD_REQUEST, null);
             }
             User user = userInterface.getUser(username).get();
             if (!user.isTwoFA()) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
+                return ResponseHandler.generateResponse(errors.NEED_TO_BE_2FA, HttpStatus.OK, null);
             }
             try {
                 if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(convertingTokenRequest.code), 0)) {
                     fairLock.unlockUserLock(username);
-                    return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
+                    return ResponseHandler.generateResponse(errors.INVALID_CODE, HttpStatus.OK, null);
                 }
             } catch (GeneralSecurityException e) {
                 fairLock.unlockUserLock(username);
                 logger.error(e.getMessage());
-                return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
             }
             if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.LOW_NATIVE_TOKENS_BALANCE, HttpStatus.OK, null);
+                return ResponseHandler.generateResponse(errors.LOW_NATIVE_TOKENS_BALANCE, HttpStatus.OK, null);
             }
 
             double tokensQuantityToUSD = (convertingTokenRequest.tokenName.equalsIgnoreCase("silver_coin")) ? convertingTokenRequest.tokenAmount * 0.01 : convertingTokenRequest.tokenAmount;
@@ -135,48 +137,48 @@ public class TokensConverter {
             fairLock.unlockUserLock(username);
             return ResponseHandler.generateResponse("", HttpStatus.OK, new HashMap<>(Map.of("unitResponse", unitResponse.toMap(), "mainChainResponse", transactionResult.transactionReceipt.toString())));
         }
-        return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+        return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> investInBurger(InvestmentInBurgerRequest investmentInBurgerRequest, String username) {
         Optional<UserLock> userLock = fairLock.getUserFairLock(username);
-        if (userLock.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.LOCK, HttpStatus.OK, null);
+        if (userLock.isEmpty()) return ResponseHandler.generateResponse(errors.LOCK, HttpStatus.OK, null);
         if (investmentInBurgerRequest.quantityOfBurgers == 0) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.BURGER_QUANTITY_ERROR, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.BURGER_QUANTITY_ERROR, HttpStatus.OK, null);
         }
         Optional<NFT> optionalNFT = nftInterface.findByIndex(new NFTSeekingRequest(investmentInBurgerRequest.index));
         if (optionalNFT.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.NFT_NOT_EXISTS, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.NFT_NOT_EXISTS, HttpStatus.OK, null);
         }
         Optional<ConnectedWallet> optionalConnectedWallet = connectedWalletInterface.findByUsername(username);
         if (optionalConnectedWallet.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.METAMASK_ERROR, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.METAMASK_ERROR, HttpStatus.OK, null);
         }
         if (balanceInterface.isOwnerOfNFT(username, investmentInBurgerRequest.index, investmentInBurgerRequest.chainName)) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.OWNERSHIP_ERROR, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.OWNERSHIP_ERROR, HttpStatus.OK, null);
         }
         User user = userInterface.getUser(username).get();
         if (!user.isTwoFA()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.NEED_TO_BE_2FA, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.NEED_TO_BE_2FA, HttpStatus.OK, null);
         }
         try {
             if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(investmentInBurgerRequest.code), 0)) {
                 fairLock.unlockUserLock(username);
-                return ResponseHandler.generateResponse(ErrorMessage.INVALID_CODE, HttpStatus.OK, null);
+                return ResponseHandler.generateResponse(errors.INVALID_CODE, HttpStatus.OK, null);
             }
         } catch (GeneralSecurityException e) {
             fairLock.unlockUserLock(username);
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.BAD_REQUEST, null);
         }
         if (user.getBalance().compareTo(BigDecimal.valueOf(10)) < 0) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.LOW_GOLD_COINS_BALANCE, HttpStatus.BAD_REQUEST, null);
+            return ResponseHandler.generateResponse(errors.LOW_GOLD_COINS_BALANCE, HttpStatus.BAD_REQUEST, null);
         }
         NFT nft = optionalNFT.get();
         Optional<List<ScheduledTransaction>> optionalScheduledTransactionList = scheduledTransactionRepository.findByNftNameAndActiveTillLessThanAndReverted(nft.name, new Date().getTime(), false);
@@ -191,17 +193,17 @@ public class TokensConverter {
         Optional<JSONObject> optionalJsonBalance = Optional.ofNullable(unitService.getBalance(nft.name));
         if (optionalJsonBalance.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         Optional<Double> optionalInCarrotsBalance = UserMineService.getValueInDouble(optionalJsonBalance.get(), "gold_coin");
         if (optionalInCarrotsBalance.isEmpty()) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR, HttpStatus.OK, null);
         }
         double inGoldCoinsBalance = optionalInCarrotsBalance.get();
         if (inGoldCoinsBalance < investmentInBurgerRequest.quantityOfBurgers * 10) {
             fairLock.unlockUserLock(username);
-            return ResponseHandler.generateResponse(ErrorMessage.LOW_GOLD_COINS_BALANCE, HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.LOW_GOLD_COINS_BALANCE, HttpStatus.OK, null);
         }
 
         JSONObject goldCoin = unitService.sendTokens(new TransferTokensRequests("merchant", nft.name, investmentInBurgerRequest.quantityOfBurgers * 10, "gold_coin"));

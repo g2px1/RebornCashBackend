@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/oreHuntService/market/")
-public class GolderRushMarketController {
+public class GoldenRushMarketController {
     @Autowired
     private TokensService tokensService;
     @Autowired

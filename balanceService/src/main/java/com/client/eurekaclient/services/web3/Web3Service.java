@@ -1,6 +1,6 @@
 package com.client.eurekaclient.services.web3;
 
-import com.client.eurekaclient.messages.ErrorMessage;
+import com.client.eurekaclient.messages.Errors;
 import com.client.eurekaclient.models.DTO.transactions.TransactionResult;
 import com.client.eurekaclient.models.DTO.users.User;
 import com.client.eurekaclient.models.response.BlockchainDataResponse;
@@ -30,7 +30,6 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Transfer;
-import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.utils.Convert;
 
 import java.io.File;
@@ -54,6 +53,8 @@ public class Web3Service {
     private ConnectedWalletsRepository connectedWalletsRepository;
     @Autowired
     private FairLock fairLock;
+    @Autowired
+    private Errors errors;
     private static final Function<Double, Double> rounder = j -> Math.round(j * 10000.0) / 10000.0;
     private static final Logger logger = LoggerFactory.getLogger(Web3Service.class);
     @Value("${app.path.to.wallets}")
@@ -61,7 +62,7 @@ public class Web3Service {
 
     public Optional<TransactionResult> sendNativeTokenTransaction(String recipientAddress, String chainName, double amount, String username) {
         Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
-        if (blockchainDataOptional.isEmpty()) return Optional.of(new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED));
+        if (blockchainDataOptional.isEmpty()) return Optional.of(new TransactionResult(null, true, errors.CHAIN_NOT_SUPPORTED));
         BlockchainData blockchainData = blockchainDataOptional.get();
         amount = Web3Service.rounder.apply(amount);
         Credentials credentials = null;
@@ -83,20 +84,20 @@ public class Web3Service {
             return Optional.of(new TransactionResult(transactionReceipt, false, null));
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return Optional.of(new TransactionResult(null, true, ErrorMessage.TRANSACTION_ERROR));
+            return Optional.of(new TransactionResult(null, true, errors.TRANSACTION_ERROR));
         }
     }
     public TransactionResult sendSafeNativeTokenTransaction(String recipientAddress, String chainName, double amount, String username, String code) {
         User user = userInterface.getUser(username).get();
         try {
             if (!TimeBasedOneTimePasswordUtil.validateCurrentNumber(user.getSecretKey(), Integer.parseInt(code), 0))
-                return new TransactionResult(null, true, ErrorMessage.INVALID_CODE);
+                return new TransactionResult(null, true, errors.INVALID_CODE);
         } catch (GeneralSecurityException e) {
             logger.error(e.getMessage());
-            return new TransactionResult(null, true, ErrorMessage.DEFAULT_ERROR);
+            return new TransactionResult(null, true, errors.DEFAULT_ERROR);
         }
         Optional<BlockchainData> blockchainDataOptional = blockchainsRepository.findByName(chainName);
-        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, ErrorMessage.CHAIN_NOT_SUPPORTED);
+        if (blockchainDataOptional.isEmpty()) return new TransactionResult(null, true, errors.CHAIN_NOT_SUPPORTED);
         BlockchainData blockchainData = blockchainDataOptional.get();
         amount = Web3Service.rounder.apply(amount);
         Credentials credentials = null;
@@ -106,21 +107,21 @@ public class Web3Service {
                     this.pathToWalletFiles+blockchainData.walletFileName);
         } catch (java.io.IOException | org.web3j.crypto.CipherException e) {
             logger.error(e.getMessage());
-            return new TransactionResult(null, true, ErrorMessage.DEFAULT_ERROR);
+            return new TransactionResult(null, true, errors.DEFAULT_ERROR);
         }
         GasProvider gasProvider = new GasProvider(blockchainData.url);
         try {
             TransactionReceipt transactionReceipt = Transfer.sendFunds(
                     gasProvider.getWeb3j(), credentials, recipientAddress,
                     BigDecimal.valueOf(amount), Convert.Unit.ETHER).send();
-            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(ErrorMessage.TRANSACTION_ERROR, "transaction already exists."));
+            if (transactionsRepository.existsByHashAndChainName(transactionReceipt.getTransactionHash(), chainName)) return new TransactionResult(null, true, String.format(errors.TRANSACTION_ERROR, "transaction already exists."));
             transactionsRepository.save(new Transaction(transactionReceipt.getTransactionHash(), chainName, username));
             user.setBalance(user.getBalance().subtract(BigDecimal.valueOf(amount)));
             userInterface.saveUser(user);
             return new TransactionResult(transactionReceipt, false, null);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return new TransactionResult(null, true, ErrorMessage.TRANSACTION_ERROR);
+            return new TransactionResult(null, true, errors.TRANSACTION_ERROR);
         }
     }
 
@@ -129,7 +130,7 @@ public class Web3Service {
             String data = JsonPath.read(json, String.format("$.%s", pathToJson));
             return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, Map.of("parsedData", data));
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.BAD_REQUEST, true);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR , HttpStatus.BAD_REQUEST, true);
         }
     }
 
@@ -142,16 +143,16 @@ public class Web3Service {
                     new File(this.pathToWalletFiles));
         } catch (org.web3j.crypto.CipherException | java.security.InvalidAlgorithmParameterException | java.security.NoSuchAlgorithmException | java.security.NoSuchProviderException | java.io.IOException e) {
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR , HttpStatus.OK, null);
         }
         Credentials credentials = null;
         try {
             credentials = WalletUtils.loadCredentials(password, this.pathToWalletFiles+fileName);
         } catch (java.io.IOException | org.web3j.crypto.CipherException e) {
             logger.error(e.getMessage());
-            return ResponseHandler.generateResponse(ErrorMessage.DEFAULT_ERROR , HttpStatus.OK, null);
+            return ResponseHandler.generateResponse(errors.DEFAULT_ERROR , HttpStatus.OK, null);
         }
-        if (blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name.toLowerCase(Locale.ROOT))) return ResponseHandler.generateResponse(ErrorMessage.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
+        if (blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name.toLowerCase(Locale.ROOT))) return ResponseHandler.generateResponse(errors.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
         blockchainData.setPasswordToWalletFile(password);
         blockchainData.setWalletFileName(fileName);
         blockchainData.setHotWalletAddress(credentials.getAddress());
@@ -167,12 +168,12 @@ public class Web3Service {
 
     public ResponseEntity<Object> getAddress(String chainName) {
         Optional<BlockchainData> blockchainData = blockchainsRepository.findByName(chainName);
-        if(blockchainData.isEmpty()) return ResponseHandler.generateResponse(ErrorMessage.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, null);
+        if(blockchainData.isEmpty()) return ResponseHandler.generateResponse(errors.CHAIN_NOT_SUPPORTED, HttpStatus.BAD_REQUEST, null);
         return ResponseHandler.generateResponse(blockchainData.get().hotWalletAddress, HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> changeBlockchain(BlockchainData blockchainData) {
-        if (!blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name)) return ResponseHandler.generateResponse(ErrorMessage.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
+        if (!blockchainsRepository.existsByUrlOrName(blockchainData.url, blockchainData.name)) return ResponseHandler.generateResponse(errors.BLOCKCHAIN_ALREADY_ADDED , HttpStatus.BAD_REQUEST, null);
         blockchainsRepository.save(blockchainData);
         return ResponseHandler.generateResponse(null , HttpStatus.BAD_REQUEST, true);
     }
