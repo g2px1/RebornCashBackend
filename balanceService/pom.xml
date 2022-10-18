@@ -9,8 +9,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.client</groupId>
-    <artifactId>eurekaClient</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>balanceService</artifactId>
+    <version>0.1</version>
     <name>eurekaClient</name>
     <description>eurekaClient</description>
     <properties>

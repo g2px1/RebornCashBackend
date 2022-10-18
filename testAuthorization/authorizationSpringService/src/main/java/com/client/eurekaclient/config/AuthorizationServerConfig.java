@@ -9,6 +9,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
@@ -46,20 +47,35 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
 
+//	@Bean
+//	@Order(Ordered.HIGHEST_PRECEDENCE)
+//	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+//		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+//		// @formatter:off
+//		http
+//				.exceptionHandling(exceptions ->
+//						exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+//				)
+//				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+//		// @formatter:on
+//		return http.build();
+//	}
+
 	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-		// @formatter:off
-		http
-				.csrf(c -> c
-						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-				)
-				.exceptionHandling(exceptions ->
-						exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-		// @formatter:on
+		OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
+				new OAuth2AuthorizationServerConfigurer<>();
+		http.apply(authorizationServerConfigurer);
+
+		authorizationServerConfigurer
+				.tokenEndpoint(tokenEndpoint ->
+						tokenEndpoint
+								.accessTokenRequestConverter(accessTokenRequestConverter)
+								.authenticationProvider(authenticationProvider)
+								.accessTokenResponseHandler(accessTokenResponseHandler)
+								.errorResponseHandler(errorResponseHandler)
+				);
+
 		return http.build();
 	}
 
@@ -79,7 +95,7 @@ public class AuthorizationServerConfig {
 				.scope(OidcScopes.PROFILE)
 				.scope("message.read")
 				.scope("message.write")
-				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
+				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 				.build();
 		// Save registered client in db as if in-memory
 		JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);

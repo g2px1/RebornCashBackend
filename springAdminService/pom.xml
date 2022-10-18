@@ -9,8 +9,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.client</groupId>
-    <artifactId>eurekaClient</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>springAdmin</artifactId>
+    <version>0.1</version>
     <name>eurekaClient</name>
     <description>eurekaClient</description>
     <properties>
