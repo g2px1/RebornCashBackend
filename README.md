@@ -29,6 +29,7 @@
 25) https://dzone.com/articles/using-nimbus-jose-jwt-in-spring-applications-why-a
 26) https://habr.com/ru/company/ruvds/blog/686628/
 27) https://medium.com/nuances-of-programming/как-создавать-надежные-ssl-сертификаты-для-локальной-разработки-8f73f76df3d4
+28) https://stackoverflow.com/questions/58918896/how-to-use-oauth2authorizedclientmanager-vs-oauth2authorizedclientservice
 
 ### Spring tutorials
 1) https://github.com/spring-projects/spring-authorization-server/tree/main/samples/default-authorizationserver/src/main/java/sample
