@@ -35,6 +35,7 @@
 31) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/protocol-endpoints.html#oauth2-token-endpoint
 --------
 33) https://stackoverflow.com/questions/72615662/calling-spring-authorization-server-oauth2-rest-endpoints
+34) https://howtodoinjava.com/spring-boot/springdoc-openapi-rest-documentation/
 
 ### Spring tutorials
 1) https://github.com/spring-projects/spring-authorization-server/tree/main/samples/default-authorizationserver/src/main/java/sample
