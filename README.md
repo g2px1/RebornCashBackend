@@ -30,6 +30,13 @@
 26) https://habr.com/ru/company/ruvds/blog/686628/
 27) https://medium.com/nuances-of-programming/как-создавать-надежные-ssl-сертификаты-для-локальной-разработки-8f73f76df3d4
 28) https://stackoverflow.com/questions/58918896/how-to-use-oauth2authorizedclientmanager-vs-oauth2authorizedclientservice
+29) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/overview.html#feature-list
+30) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/configuration-model.html#configuring-client-authentication
+31) https://docs.spring.io/spring-authorization-server/docs/current/reference/html/protocol-endpoints.html#oauth2-token-endpoint
+--------
+33) https://stackoverflow.com/questions/72615662/calling-spring-authorization-server-oauth2-rest-endpoints
+34) https://howtodoinjava.com/spring-boot/springdoc-openapi-rest-documentation/
+35) https://github.com/spring-projects/spring-security-samples/tree/5.7.x/servlet/spring-boot/java
 
 ### Spring tutorials
 1) https://github.com/spring-projects/spring-authorization-server/tree/main/samples/default-authorizationserver/src/main/java/sample
