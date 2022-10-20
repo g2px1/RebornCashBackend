@@ -29,21 +29,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-/**
- * @author Joe Grandja
- * @since 0.1.0
- */
 @EnableWebSecurity
 public class DefaultSecurityConfig {
 	@Bean
-	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests(authorizeRequests ->
-						authorizeRequests.anyRequest().authenticated())
-				.formLogin(withDefaults());
-		return http.build();
-	}
-	@Bean
-	UserDetailsService users() {
+	protected UserDetailsService users() {
 		UserDetails user = User.withDefaultPasswordEncoder()
 				.username("admin")
 				.password("1")
