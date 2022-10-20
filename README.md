@@ -36,6 +36,7 @@
 --------
 33) https://stackoverflow.com/questions/72615662/calling-spring-authorization-server-oauth2-rest-endpoints
 34) https://howtodoinjava.com/spring-boot/springdoc-openapi-rest-documentation/
+35) https://github.com/spring-projects/spring-security-samples/tree/5.7.x/servlet/spring-boot/java
 
 ### Spring tutorials
 1) https://github.com/spring-projects/spring-authorization-server/tree/main/samples/default-authorizationserver/src/main/java/sample
