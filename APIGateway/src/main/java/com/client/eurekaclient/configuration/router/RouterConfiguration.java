@@ -24,7 +24,8 @@ public class RouterConfiguration {
                                     ServerHttpRequest request = req.mutate().path(newPath).build();
                                     exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
                                     return chain.filter(exchange.mutate().request(request).build());
-                                }))
+                                })
+                        )
                         .uri("lb://authorizationService/"))
                 .route(p -> p
                         .path("/api/authentication/signup")

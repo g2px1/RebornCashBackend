@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/authorizationService")
 public class AuthenticationController {
@@ -19,6 +20,7 @@ public class AuthenticationController {
 
     @PostMapping("/user/authorizeUser")
     public ResponseEntity<Object> authorizeUser(@RequestBody AuthorizationDTO authorizationDTO) {
+        System.out.println(authorizationDTO.username);
         return authorizationService.authorizeUser(authorizationDTO);
     }
 
