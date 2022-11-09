@@ -31,7 +31,7 @@ public class ArticleController {
         return articleService.save(article);
     }
     @PostMapping("/update")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> update(@RequestBody Article article) {
         return articleService.update(article);
     }

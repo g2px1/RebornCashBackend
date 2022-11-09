@@ -36,7 +36,8 @@ public class ArticleService {
         return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
     }
     public ResponseEntity<Object> update(Article article) {
-        if (!articleRepository.existsByHeading(article.getHeading())) return ResponseHandler.generateResponse(ErrorMessage.ARTICLE_EXISTS, HttpStatus.BAD_REQUEST, null);
+        if (!articleRepository.existsByUuid(article.getUuid())) return ResponseHandler.generateResponse(ErrorMessage.ARTICLE_NOT_EXISTS, HttpStatus.BAD_REQUEST, null);
+        articleRepository.deleteArticleByUuid(article.getUuid());
         articleRepository.save(article);
         return ResponseHandler.generateResponse("success", HttpStatus.NO_CONTENT, null);
     }
