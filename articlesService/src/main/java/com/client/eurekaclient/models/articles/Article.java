@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,17 +18,17 @@ public class Article implements Comparable<Article>{
     @NotBlank
     private String username;
     @NotBlank
-    private String shortDescription;
-    private List<String> tags;
+    public String shortDescription;
+    public List<String> tags;
     @NotBlank
-    private String type;
+    public String type;
     @NotBlank
-    private String heading;
+    public String heading;
     @NotBlank
-    private String articleText;
+    public String articleText;
     @NotBlank
-    private String previewImage;
-    private String uuid = UUID.randomUUID().toString();
+    public String previewImage;
+    public String uuid = UUID.randomUUID().toString();
     public String publicationDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now());
 
     public String getUsername() {
@@ -81,8 +82,31 @@ public class Article implements Comparable<Article>{
         this.publicationDate = publicationDate;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int compareTo(Article o) {
         return this.publicationDate.compareTo(o.publicationDate);
+    }
+
+    public void buildFromOther(Article o) {
+        try {
+            for (Field f : getClass().getDeclaredFields()) {
+                if (f.get(o) != null) {
+                    System.out.println(f.get(this));
+                    Field fi = this.getClass().getDeclaredField(f.getName());
+                    fi.setAccessible(true);
+                    fi.set(this, f.get(o));
+                }
+            }
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
